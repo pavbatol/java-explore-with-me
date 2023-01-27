@@ -1,5 +1,5 @@
 server:
-  port: 9090
+  port: 8080
 
 spring:
   datasource:
@@ -19,11 +19,12 @@ spring:
       mode: always
 
 app:
-  name: ewm-stats
+  name: ewm-main
+  stats-server-url: http://localhost:9090
   db:
     host: localhost
     port: 5432
-    name: ewm-stats
+    name: ewm-main
     user: postgres
     password: 12345
   format:

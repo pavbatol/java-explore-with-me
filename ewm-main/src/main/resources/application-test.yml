@@ -1,5 +1,5 @@
 server:
-  port: 9090
+  port: 8080
 
 spring:
   driver-class-name: org.h2.Driver
@@ -9,7 +9,8 @@ spring:
 
 
 app:
-  name: ewm-stats
+  name: ewm-main
+  stats-server-url: http://localhost:9090
   format:
     date: yyyy-MM-dd
     date-time: yyyy-MM-dd HH:mm:ss

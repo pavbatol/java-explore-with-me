@@ -1,9 +1,10 @@
-package ru.practicum.stats;
+package ru.practicum.ewm.stats;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.stats.model.StatsDtoRequest;
-import ru.practicum.stats.model.StatsDtoResponse;
+import ru.practicum.ewm.stats.model.StatsDtoRequest;
+import ru.practicum.ewm.stats.model.StatsDtoResponse;
+import ru.practicum.ewm.stats.service.StatsService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,7 +18,7 @@ public class StatsController {
 
     @PostMapping("/hit")
     public void add(@Valid @RequestBody StatsDtoRequest dto) {
-        return statsService.add(dto);
+        statsService.add(dto);
     }
 
     @GetMapping("/stats")
@@ -25,6 +26,6 @@ public class StatsController {
                                       @RequestParam("end") String end,
                                       @RequestParam("uris") List<String> uris,
                                       @RequestParam("unique") Boolean unique) {
-        return statsService
+        return statsService.get(start, end, uris, unique);
     }
 }
