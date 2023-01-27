@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Value
 public class StatsDtoRequest {
+    Long id;
 
     @NotBlank
     String app;

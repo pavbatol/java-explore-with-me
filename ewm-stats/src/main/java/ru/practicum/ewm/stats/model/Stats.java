@@ -1,9 +1,6 @@
 package ru.practicum.ewm.stats.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
@@ -19,7 +16,6 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "stats")
-
 public class Stats {
 
     @Id
