@@ -12,12 +12,4 @@ public class StatsMapper {
                 .setIp(dto.getIp())
                 .setTimestamp(dto.getTimestamp());
     }
-
-    public StatsDtoResponse dtoResponse(Stats stats, Long hits) {
-        return new StatsDtoResponse(
-                stats.getApp(),
-                stats.getUri(),
-                hits
-        );
-    }
 }

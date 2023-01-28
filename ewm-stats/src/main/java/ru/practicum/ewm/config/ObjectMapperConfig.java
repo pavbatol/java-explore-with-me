@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import java.time.format.DateTimeFormatter;
 
 @Configuration
-//public class ObjectMapperConfig implements WebMvcConfigurer {
 public class ObjectMapperConfig {
 
     @Value("${app.format.date}")
@@ -31,12 +30,4 @@ public class ObjectMapperConfig {
             builder.deserializers(new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(dateTimeFormat)));
         };
     }
-
-//    @Override
-//    public void addFormatters(FormatterRegistry registry) {
-//        DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
-//        registrar.setDateFormatter(DateTimeFormatter.ofPattern(dateFormat));
-//        registrar.setDateTimeFormatter(DateTimeFormatter.ofPattern(dateTimeFormat));
-//        registrar.registerFormatters(registry);
-//    }
 }
