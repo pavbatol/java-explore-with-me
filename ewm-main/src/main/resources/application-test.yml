@@ -6,7 +6,17 @@ spring:
   url: jdbc:h2:mem:ewm
   username: test
   password: test
+  banner:
+    location: banner-test.txt
 
+logging:
+  level:
+    ru.practicum: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+    org.springframework.web: DEBUG
+    guru.springframework.controllers: DEBUG
+    org.hibernate: DEBUG
+    org: INFO
 
 app:
   name: ewm-main

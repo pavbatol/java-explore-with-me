@@ -6,6 +6,8 @@ spring:
   url: jdbc:h2:mem:ewm
   username: test
   password: test
+  banner:
+    location: banner-test.txt
 
 logging:
   level:

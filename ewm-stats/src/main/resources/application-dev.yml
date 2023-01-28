@@ -17,6 +17,8 @@ spring:
   sql:
     init:
       mode: always
+  banner:
+    location: banner-dev.txt
 
 logging:
   level:

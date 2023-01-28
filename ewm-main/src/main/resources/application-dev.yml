@@ -17,6 +17,17 @@ spring:
   sql:
     init:
       mode: always
+  banner:
+    location: banner-dev.txt
+
+logging:
+  level:
+    ru.practicum: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+    org.springframework.web: DEBUG
+    guru.springframework.controllers: DEBUG
+    org.hibernate: DEBUG
+    org: INFO
 
 app:
   name: ewm-main
