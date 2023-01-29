@@ -18,7 +18,7 @@ spring:
     init:
       mode: always
   banner:
-    location: banner-default.txt
+    location: banner/banner.txt
 
 logging:
   level:
