@@ -70,7 +70,7 @@ public class StatsClient {
         HttpEntity<Object> httpEntity = new HttpEntity<>(defaultHeaders());
         String path = STATS + "?start={start}&end={end}&uris={uris}&unique={unique}";
         ResponseEntity<Object> response = rest.exchange(path, HttpMethod.GET, httpEntity, Object.class, parameters);
-        return prepareGatewayResponse(response);
+        return prepareResponse(response);
     }
 
     private HttpHeaders defaultHeaders() {
@@ -80,7 +80,7 @@ public class StatsClient {
         return headers;
     }
 
-    private static ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
+    private static ResponseEntity<Object> prepareResponse(ResponseEntity<Object> response) {
         if (response.getStatusCode().is2xxSuccessful()) {
             return response;
         }

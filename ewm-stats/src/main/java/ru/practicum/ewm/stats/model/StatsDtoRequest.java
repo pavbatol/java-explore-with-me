@@ -3,6 +3,7 @@ package ru.practicum.ewm.stats.model;
 import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Value
@@ -18,5 +19,6 @@ public class StatsDtoRequest {
     @NotBlank
     String ip;
 
+    @NotNull
     LocalDateTime timestamp;
 }
