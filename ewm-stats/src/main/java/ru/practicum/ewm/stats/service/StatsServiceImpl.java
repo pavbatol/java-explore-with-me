@@ -46,16 +46,14 @@ public class StatsServiceImpl implements StatsService {
             conditions.add(cb.in(root.get(URI)).value(uris));
         }
 
-        if (unique) {
-            cr.groupBy(root.get(IP), root.get(APP), root.get(URI));
-        } else {
-            cr.groupBy(root.get(APP), root.get(URI));
-        }
-        Expression<Long> count = cb.count(root.get(IP));
-        cr.multiselect(root.get(APP), root.get(URI), count);
-        cr.where(conditions.toArray(new Predicate[]{}));
-        cr.orderBy(cb.desc(count));
+        Expression<Long> count = unique
+                ? cb.countDistinct(root.get(IP))
+                : cb.count(root.get(IP));
 
+        cr.multiselect(root.get(APP), root.get(URI), count)
+                .where(conditions.toArray(new Predicate[]{}))
+                .groupBy(root.get(APP), root.get(URI))
+                .orderBy(cb.desc(count));
         return entityManager.createQuery(cr).getResultList();
     }
 }
