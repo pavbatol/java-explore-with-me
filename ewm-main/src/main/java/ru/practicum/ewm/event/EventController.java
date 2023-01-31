@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.client.StatsClient;
+import ru.practicum.stats.client.StatsClient;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -19,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/events")
 public class EventController {
+
     private final StatsClient statsClient;
 
     /**
