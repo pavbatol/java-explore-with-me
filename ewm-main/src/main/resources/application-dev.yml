@@ -19,12 +19,23 @@ spring:
       mode: always
   banner:
     location: banner/banner-dev.txt
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
 
 logging:
   level:
     ru.practicum: DEBUG
     org.springframework.web: DEBUG
     org.hibernate: DEBUG
+#    ru.practicum: DEBUG
+#    org.springframework.web.servlet.DispatcherServlet: DEBUG
+#    org.springframework.web: DEBUG
+#    guru.springframework.controllers: DEBUG
+#    org.hibernate: DEBUG
+#    org: INFO
 
 app:
   name: ewm-main

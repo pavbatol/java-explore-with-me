@@ -1,25 +1,25 @@
 package ru.practicum.ewm.common.exception.handler;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Value
 public class ErrorResponse {
-    @JsonProperty("offset-timestamp")
-    OffsetDateTime timestamp = OffsetDateTime.now();
 
-    @JsonProperty("end-point")
-    String endPoint;
+    LocalDateTime timestamp = LocalDateTime.now();
 
-    @JsonProperty("status")
-    int status;
+    String mapping;
 
-    @JsonProperty("error")
-    String error;
+    String status;
 
-    @JsonProperty("reasons")
-    List<String> reasons;
+    String reason;
+
+    String message;
+
+    String details;
+
+    List<String> errors;
+    List<String> trace;
 }

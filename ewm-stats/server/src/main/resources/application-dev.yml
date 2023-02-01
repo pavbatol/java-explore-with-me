@@ -19,6 +19,11 @@ spring:
       mode: always
   banner:
     location: banner/banner-dev.txt
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
 
 logging:
   level:
