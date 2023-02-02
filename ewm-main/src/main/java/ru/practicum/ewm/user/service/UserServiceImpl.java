@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.app.utill.CustomPageRequest;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.model.UserDto;
@@ -23,7 +22,7 @@ import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
 public class UserServiceImpl implements UserService {
 
     public static final String ID = "id";
-    public static final String ENTITY_SIMPLE_NAME = Category.class.getSimpleName();
+    public static final String ENTITY_SIMPLE_NAME = User.class.getSimpleName();
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -41,14 +40,14 @@ public class UserServiceImpl implements UserService {
         Page<User> page = Objects.nonNull(userIds) && !userIds.isEmpty()
                 ? userRepository.findByIdIn(userIds, pageable)
                 : userRepository.findAll(pageable);
-        log.debug("Found {}: {}, pages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
+        log.debug("Found {}: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
                 page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
         return userMapper.toDtos(page.getContent());
     }
 
     @Override
     public void remove(Long userId) {
-        checkId(userRepository, userId, ENTITY_SIMPLE_NAME);
+        checkId(userRepository, userId, User.class);
         log.debug("Removed {} by id #{}:", ENTITY_SIMPLE_NAME, userId);
         userRepository.deleteById(userId);
     }

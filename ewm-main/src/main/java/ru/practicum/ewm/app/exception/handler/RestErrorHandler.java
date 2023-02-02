@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.practicum.ewm.app.exception.ConflictException;
 import ru.practicum.ewm.app.exception.NotFoundException;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
@@ -41,6 +43,11 @@ public class RestErrorHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     protected ResponseEntity<Object> handleMethodArgumentNotValidEx(MethodArgumentNotValidException ex, WebRequest request) {
+        return makeResponseEntity(INCORRECTLY_MADE_REQUEST, ex, BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    protected ResponseEntity<Object> handleMethodArgumentTypeMismatchEx(MethodArgumentTypeMismatchException ex, WebRequest request) {
         return makeResponseEntity(INCORRECTLY_MADE_REQUEST, ex, BAD_REQUEST, request);
     }
 
@@ -129,13 +136,15 @@ public class RestErrorHandler {
         List<String> stackTrace = UNEXPECTED_ERROR.equals(reason)
                 ? Arrays.stream(ex.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.toList())
                 : List.of(String.format("This field will contain when '%s'", UNEXPECTED_ERROR));
+        String message = !errors.isEmpty() ? errors.get(0) : "No message";
+        String details = !errors.isEmpty() && !Objects.equals(ex.getMessage(), errors.get(0)) ? ex.getMessage() : "No details";
 
         return new ErrorResponse(
                 getRequestURI(request),
                 status.name(),
                 reason,
-                errors.get(0),
-                ex.getMessage().equals(errors.get(0)) ? "No details" : ex.getMessage(),
+                message,
+                details,
                 errors,
                 stackTrace);
     }

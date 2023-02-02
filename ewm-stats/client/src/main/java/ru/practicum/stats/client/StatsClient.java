@@ -3,12 +3,14 @@ package ru.practicum.stats.client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.stats.dto.StatsDtoRequest;
+import ru.practicum.stats.dto.StatsDtoResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -56,10 +58,10 @@ public class StatsClient {
         }
     }
 
-    public ResponseEntity<Object> find(@NotNull LocalDateTime start,
-                                       @NotNull LocalDateTime end,
-                                       List<String> uris,
-                                       Boolean unique) {
+    public ResponseEntity<List<StatsDtoResponse>> find(@NotNull LocalDateTime start,
+                                                       @NotNull LocalDateTime end,
+                                                       List<String> uris,
+                                                       Boolean unique) {
         log.debug("Trying send request for 'find'");
         Map<String, Object> parameters = Map.of(
                 "start", start.format(formatter),
@@ -67,9 +69,12 @@ public class StatsClient {
                 "uris", uris != null ? String.join(",", uris) : "",
                 "unique", unique != null ? unique : "false"
         );
-        HttpEntity<Object> httpEntity = new HttpEntity<>(defaultHeaders());
+        HttpEntity<StatsDtoResponse> httpEntity = new HttpEntity<>(defaultHeaders());
+
         String path = STATS + "?start={start}&end={end}&uris={uris}&unique={unique}";
-        ResponseEntity<Object> response = rest.exchange(path, HttpMethod.GET, httpEntity, Object.class, parameters);
+        ResponseEntity<List<StatsDtoResponse>> response = rest.exchange(path, HttpMethod.GET, httpEntity,
+                new ParameterizedTypeReference<>() {
+                }, parameters);
         return prepareResponse(response);
     }
 
@@ -80,7 +85,7 @@ public class StatsClient {
         return headers;
     }
 
-    private static ResponseEntity<Object> prepareResponse(ResponseEntity<Object> response) {
+    private static ResponseEntity<List<StatsDtoResponse>> prepareResponse(ResponseEntity<List<StatsDtoResponse>> response) {
         if (response.getStatusCode().is2xxSuccessful()) {
             return response;
         }

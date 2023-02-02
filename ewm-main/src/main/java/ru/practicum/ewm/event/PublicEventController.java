@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.stats.client.StatsClient;
+import ru.practicum.stats.dto.StatsDtoResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/events")
-public class EventController {
+public class PublicEventController {
 
     private final EventService eventService;
     private final StatsClient statsClient;
@@ -30,7 +31,7 @@ public class EventController {
 
     @GetMapping("/stats")
     @Operation(summary = "findStats")
-    public ResponseEntity<Object> findStats() {
+    public ResponseEntity<List<StatsDtoResponse>> findStats() {
         return statsClient.find(
                 LocalDateTime.now().minusDays(50),
                 LocalDateTime.now().plusDays(1),
