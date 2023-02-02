@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.category.model.Category;
-import ru.practicum.ewm.common.utill.CustomPageRequest;
+import ru.practicum.ewm.app.utill.CustomPageRequest;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.model.UserDto;
 import ru.practicum.ewm.user.model.UserMapper;
@@ -15,7 +15,7 @@ import ru.practicum.ewm.user.storage.UserRepository;
 import java.util.List;
 import java.util.Objects;
 
-import static ru.practicum.ewm.common.validation.ValidatorManager.checkId;
+import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
 
 @Slf4j
 @Service

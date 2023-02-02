@@ -1,4 +1,4 @@
-package ru.practicum.ewm.common.exception.handler;
+package ru.practicum.ewm.app.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import ru.practicum.ewm.common.exception.ConflictException;
-import ru.practicum.ewm.common.exception.NotFoundException;
+import ru.practicum.ewm.app.exception.ConflictException;
+import ru.practicum.ewm.app.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;

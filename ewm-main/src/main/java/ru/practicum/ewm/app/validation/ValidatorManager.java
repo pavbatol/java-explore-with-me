@@ -1,10 +1,10 @@
-package ru.practicum.ewm.common.validation;
+package ru.practicum.ewm.app.validation;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.CrudRepository;
-import ru.practicum.ewm.common.exception.NotFoundException;
+import ru.practicum.ewm.app.exception.NotFoundException;
 
 import javax.validation.constraints.NotNull;
 

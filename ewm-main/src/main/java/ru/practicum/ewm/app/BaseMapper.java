@@ -1,4 +1,4 @@
-package ru.practicum.ewm.common;
+package ru.practicum.ewm.app;
 
 import org.mapstruct.*;
 

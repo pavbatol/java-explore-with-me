@@ -1,4 +1,4 @@
-package ru.practicum.ewm.common;
+package ru.practicum.ewm.app;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

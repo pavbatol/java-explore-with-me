@@ -1,4 +1,4 @@
-package ru.practicum.ewm.common.exception;
+package ru.practicum.ewm.app.exception;
 
 public class ConflictException extends AbstractBaseException {
     public ConflictException(String reason, String message) {

@@ -7,10 +7,10 @@ import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.model.CategoryDto;
 import ru.practicum.ewm.category.model.CategoryMapper;
 import ru.practicum.ewm.category.storage.CategoryRepository;
-import ru.practicum.ewm.common.exception.ConflictException;
+import ru.practicum.ewm.app.exception.ConflictException;
 
-import static ru.practicum.ewm.common.validation.ValidatorManager.checkId;
-import static ru.practicum.ewm.common.validation.ValidatorManager.getNonNullObject;
+import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
+import static ru.practicum.ewm.app.validation.ValidatorManager.getNonNullObject;
 
 @Slf4j
 @Service
@@ -41,6 +41,10 @@ public class CategoryServiceImpl implements CategoryService {
     public void remove(Long catId) {
 
         //!!! Check Category for empty
+        /*
+        Сделать запрос в  базу Событий с фильтрацией по категории catId
+        Если к категории есть привязанные события - значит удалять нельзя
+         */
         if (catId > 0) {
             throw new ConflictException("The category is not empty");
         }

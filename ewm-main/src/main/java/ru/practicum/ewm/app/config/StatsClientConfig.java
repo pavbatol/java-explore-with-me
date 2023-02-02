@@ -1,4 +1,4 @@
-package ru.practicum.ewm.common.config;
+package ru.practicum.ewm.app.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
