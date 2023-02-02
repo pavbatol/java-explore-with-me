@@ -38,12 +38,12 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> find(List<Long> userIds, Integer from, Integer size) {
         Sort sort = Sort.by(ID).ascending();
         CustomPageRequest pageable = CustomPageRequest.by(from, size, sort);
-        Page<User> users = Objects.nonNull(userIds) && !userIds.isEmpty()
+        Page<User> page = Objects.nonNull(userIds) && !userIds.isEmpty()
                 ? userRepository.findByIdIn(userIds, pageable)
                 : userRepository.findAll(pageable);
         log.debug("Found {}: {}, pages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
-                users.getTotalElements(), users.getTotalPages(), pageable.getFrom(), users.getSize(), users.getSort());
-        return userMapper.toDtos(users.getContent());
+                page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
+        return userMapper.toDtos(page.getContent());
     }
 
     @Override

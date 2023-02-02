@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.stats.client.StatsClient;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("/events")
 public class EventController {
 
+    private final EventService eventService;
     private final StatsClient statsClient;
 
     /**
@@ -39,7 +41,7 @@ public class EventController {
     @GetMapping
     @Operation(summary = "findAll")
     public ResponseEntity<Object> findAll(HttpServletRequest servletRequest) {
-        log.debug("Get (findAll) Test request received");
+        log.debug("Get findAll() Test request received");
         statsClient.add(servletRequest);
         return null;
     }
@@ -48,7 +50,7 @@ public class EventController {
     @Operation(summary = "findById")
     public ResponseEntity<Object> findById(@PathVariable("id") Long eventId,
                                            HttpServletRequest servletRequest) {
-        log.debug("GET (findById) Test request received");
+        log.debug("GET findById() Test request received");
         statsClient.add(servletRequest);
         return null;
     }
