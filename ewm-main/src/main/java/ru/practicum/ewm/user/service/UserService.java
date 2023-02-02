@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserService {
     UserDto add(UserDto dto);
 
-    List<UserDto> findAllByParams(List<Long> userIds, Integer from, Integer size);
+    List<UserDto> find(List<Long> userIds, Integer from, Integer size);
 
-    void removeById(Long userId);
+    void remove(Long userId);
 }

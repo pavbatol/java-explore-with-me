@@ -2,6 +2,7 @@ package ru.practicum.ewm.user;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import ru.practicum.ewm.user.service.UserService;
 import javax.validation.Valid;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("admin/users")
@@ -21,23 +23,27 @@ public class UserController {
     @PostMapping
     @Operation(summary = "add")
     public ResponseEntity<UserDto> add(@Valid @RequestBody UserDto dto) {
+        log.debug("POST add() with {}", dto);
         UserDto body = userService.add(dto);
-        return ResponseEntity.status(201).body(body);
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @GetMapping
     @Operation(summary = "find")
-    public ResponseEntity<List<UserDto>> findAllByParams(
+    public ResponseEntity<List<UserDto>> find(
             @RequestParam(value = "ids", required = false) List<Long> userIds,
             @RequestParam(value = "from", defaultValue = "0") Integer from,
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        List<UserDto> body = userService.findAllByParams(userIds, from, size);
+        log.debug("GET find() with userIds: {}, from: {}, size: {}", userIds, from, size);
+        List<UserDto> body = userService.find(userIds, from, size);
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> removeById(@PathVariable("userId") Long userId) {
-        userService.removeById(userId);
+    @Operation(summary = "remove")
+    public ResponseEntity<Object> remove(@PathVariable("userId") Long userId) {
+        log.debug("DELETE remove() with userId: {}", userId);
+        userService.remove(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

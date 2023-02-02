@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import ru.practicum.ewm.common.exception.ConflictException;
 import ru.practicum.ewm.common.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +37,7 @@ public class RestErrorHandler {
     public static final String INTEGRITY_CONSTRAINT_HAS_BEEN_VIOLATED = "Integrity constraint has been violated.";
     public static final String INCORRECTLY_MADE_REQUEST = "Incorrectly made request.";
     public static final String MISSING_SERVLET_REQUEST_PARAMETER = "Missing servlet request parameter";
-    public static final String NOT_FOUND_OR_UNAVAILABLE = "Not found or unavailable data";
-    public static final String NOT_FOUND_DATA = "Not found data";
+    public static final String NOT_FOUND_OR_UNAVAILABLE = "Not found or unavailable";
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     protected ResponseEntity<Object> handleMethodArgumentNotValidEx(MethodArgumentNotValidException ex, WebRequest request) {
@@ -71,7 +71,12 @@ public class RestErrorHandler {
 
     @ExceptionHandler({NotFoundException.class})
     protected ResponseEntity<Object> handleNotFoundEx(NotFoundException ex, WebRequest request) {
-        return makeResponseEntity(NOT_FOUND_DATA, ex, NOT_FOUND, request);
+        return makeResponseEntity(ex.getReason(), ex, NOT_FOUND, request);
+    }
+
+    @ExceptionHandler({ConflictException.class})
+    protected ResponseEntity<Object> handleNotFoundEx(ConflictException ex, WebRequest request) {
+        return makeResponseEntity(ex.getReason(), ex, CONFLICT, request);
     }
 
 
@@ -123,14 +128,14 @@ public class RestErrorHandler {
 
         List<String> stackTrace = UNEXPECTED_ERROR.equals(reason)
                 ? Arrays.stream(ex.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.toList())
-                : List.of();
+                : List.of(String.format("This field will contain when '%s'", UNEXPECTED_ERROR));
 
         return new ErrorResponse(
                 getRequestURI(request),
                 status.name(),
                 reason,
                 errors.get(0),
-                ex.getMessage(),
+                ex.getMessage().equals(errors.get(0)) ? "No details" : ex.getMessage(),
                 errors,
                 stackTrace);
     }
