@@ -2,7 +2,7 @@ package ru.practicum.ewm.event.model;
 
 import lombok.Value;
 import ru.practicum.ewm.category.model.CategoryDto;
-import ru.practicum.ewm.event.model.enums.State;
+import ru.practicum.ewm.event.model.enums.EventState;
 import ru.practicum.ewm.user.model.UserDtoShort;
 
 import java.time.LocalDateTime;
@@ -36,7 +36,7 @@ public class EventDtoFull {
 
     Boolean requestModeration;
 
-    State state;
+    EventState state;
 
     String title;
 

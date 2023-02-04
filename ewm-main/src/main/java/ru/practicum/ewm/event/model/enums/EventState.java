@@ -1,13 +1,13 @@
 package ru.practicum.ewm.event.model.enums;
 
-public enum State {
+public enum EventState {
     PENDING,
     PUBLISHED,
     CANCELED;
 
-    public static State by(String stateName) {
+    public static EventState by(String stateName) {
         try {
-            return State.valueOf(stateName);
+            return EventState.valueOf(stateName);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Unknown state: " + stateName, e);
         }

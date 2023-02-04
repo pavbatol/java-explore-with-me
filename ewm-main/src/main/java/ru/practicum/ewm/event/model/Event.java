@@ -7,7 +7,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.ewm.category.model.Category;
-import ru.practicum.ewm.event.model.enums.State;
+import ru.practicum.ewm.event.model.enums.EventState;
 import ru.practicum.ewm.user.model.User;
 
 import javax.persistence.*;
@@ -72,7 +72,7 @@ public class Event {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    State state;
+    EventState state;
 
     @Column(name = "title", length = 120, nullable = false)
     String title; // *

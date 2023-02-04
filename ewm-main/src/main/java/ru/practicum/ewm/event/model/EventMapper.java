@@ -15,7 +15,7 @@ public interface EventMapper extends BaseMapper<Event, EventDtoFull> {
     @Mapping(target = "confirmedRequests", expression = "java(0L)")
     @Mapping(target = "createdOn", expression = "java(LocalDateTime.now())")
     @Mapping(target = "initiator.id", source = "initiatorId")
-    @Mapping(target = "state", expression = "java(State.PENDING)")
+    @Mapping(target = "state", expression = "java(EventState.PENDING)")
     Event toEntity(EventDtoNew dto, Long initiatorId);
 
     @Override

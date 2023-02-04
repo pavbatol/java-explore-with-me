@@ -57,4 +57,13 @@ public class PrivateEventController {
         EventDtoFull body = eventService.findById(initiatorId, eventId);
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
+
+//    @PatchMapping("/{eventId}")
+//    @Operation(summary = "updateById")
+//    public ResponseEntity<EventDtoFull> updateById(
+//            @PathVariable("userId") Long initiatorId,
+//            @PathVariable("eventId") Long eventId) {
+//        log.debug("PATCH updateById() with initiatorId: {}, eventId: {}", initiatorId, eventId);
+//
+//    }
 }
