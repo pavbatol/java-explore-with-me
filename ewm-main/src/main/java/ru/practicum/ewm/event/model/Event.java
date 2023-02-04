@@ -77,6 +77,6 @@ public class Event {
     @Column(name = "title", length = 120, nullable = false)
     String title; // *
 
-    @Column(name = "views", columnDefinition = "BIGINT DEFAULT 0")
+    @Transient
     Long views;
 }

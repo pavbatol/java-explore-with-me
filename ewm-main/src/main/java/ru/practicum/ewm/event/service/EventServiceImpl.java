@@ -14,8 +14,10 @@ import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.StatsDtoResponse;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
 import static ru.practicum.ewm.app.validation.ValidatorManager.getNonNullObject;
@@ -48,6 +50,8 @@ public class EventServiceImpl implements EventService {
         Page<Event> page = eventRepository.findAllByInitiatorId(initiatorId, pageable);
         log.debug("Found {}: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
                 page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
+        List<Event> entities = page.getContent();
+        setViews(entities);
         return eventMapper.toShortDtos(page.getContent());
     }
 
@@ -56,19 +60,33 @@ public class EventServiceImpl implements EventService {
         checkId(userRepository, initiatorId);
         Event entity = getNonNullObject(eventRepository, eventId);
         log.debug("Found {}: {}", ENTITY_SIMPLE_NAME, entity);
-
-        ResponseEntity<List<StatsDtoResponse>> responseEntity = statsClient.find(
-                LocalDateTime.now().minusDays(50),
-                LocalDateTime.now(),
-                List.of("/events/" + eventId),
-                true);
-
-        List<StatsDtoResponse> body = responseEntity.getBody();
-        if (Objects.nonNull(body)) {
-            entity.setViews(body.isEmpty()
-                    ? 0
-                    : body.get(0).getHits());
-        }
+        setViews(List.of(entity));
         return eventMapper.toDto(entity);
+    }
+
+    private void setViews(List<Event> events) {
+        setViews(events, LocalDateTime.of(0, 1, 1, 0, 0, 0), LocalDateTime.now());
+    }
+
+    private void setViews(List<Event> events, LocalDateTime start, LocalDateTime end) {
+        if (Objects.isNull(events) || events.isEmpty()) {
+            return;
+        }
+        List<String> uris = events.stream()
+                .map(event -> "/events/" + event.getId())
+                .collect(Collectors.toList());
+        ResponseEntity<List<StatsDtoResponse>> response = statsClient.find(start, end, uris, true);
+        events.forEach(event -> setViewsFromSources(event, response.getBody()));
+    }
+
+    private void setViewsFromSources(Event event, List<StatsDtoResponse> sources) {
+        (Objects.isNull(sources) ? new ArrayList<StatsDtoResponse>(0) : sources)
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(dto -> ("/events/" + event.getId()).equals(dto.getUri()))
+                .findFirst()
+                .ifPresentOrElse(
+                        dto -> event.setViews(dto.getHits()),
+                        () -> event.setViews(0L));
     }
 }
