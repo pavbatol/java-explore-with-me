@@ -7,9 +7,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+import ru.practicum.ewm.app.exception.ConflictException;
 import ru.practicum.ewm.app.utill.CustomPageRequest;
 import ru.practicum.ewm.category.storage.CategoryRepository;
 import ru.practicum.ewm.event.model.*;
+import ru.practicum.ewm.event.model.enums.EventState;
 import ru.practicum.ewm.event.storage.EventRepository;
 import ru.practicum.ewm.user.storage.UserRepository;
 import ru.practicum.stats.client.StatsClient;
@@ -53,6 +55,8 @@ public class EventServiceImpl implements EventService {
             checkId(categoryRepository, dto.getCategoryId());
         }
         Event entity = getNonNullObject(eventRepository, eventId);
+        checkInitiator(initiatorId, entity);
+        checkNotPublished(entity);
         entity = eventMapper.updateEntity(dto, entity, categoryRepository);
         entity = eventRepository.save(entity);
         return eventMapper.toDto(entity);
@@ -113,4 +117,17 @@ public class EventServiceImpl implements EventService {
                         dto -> event.setViews(dto.getHits()),
                         () -> event.setViews(0L));
     }
+
+    private void checkNotPublished(Event entity) {
+        if (EventState.PUBLISHED.equals(entity.getState())) {
+            throw new ConflictException("Event must not be published");
+        }
+    }
+
+    private void checkInitiator(Long initiatorId, Event entity) {
+        if (!Objects.equals(initiatorId, entity.getInitiator().getId())) {
+            throw new ConflictException("Only initiator can update");
+        }
+    }
+
 }

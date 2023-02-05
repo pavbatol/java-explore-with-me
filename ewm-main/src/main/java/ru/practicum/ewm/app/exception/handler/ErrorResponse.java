@@ -1,9 +1,12 @@
 package ru.practicum.ewm.app.exception.handler;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @Value
 public class ErrorResponse {
@@ -18,8 +21,12 @@ public class ErrorResponse {
 
     String message;
 
+    @JsonInclude(NON_NULL)
     String details;
 
+    @JsonInclude(NON_NULL)
     List<String> errors;
+
+    @JsonInclude(NON_NULL)
     List<String> trace;
 }

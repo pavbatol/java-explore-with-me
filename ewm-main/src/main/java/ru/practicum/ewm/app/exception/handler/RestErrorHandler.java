@@ -137,9 +137,9 @@ public class RestErrorHandler {
 
         List<String> stackTrace = UNEXPECTED_ERROR.equals(reason)
                 ? Arrays.stream(ex.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.toList())
-                : List.of(String.format("This field will contain when '%s'", UNEXPECTED_ERROR));
+                : null;
         String message = !errors.isEmpty() ? errors.get(0) : "No message";
-        String details = !errors.isEmpty() && !Objects.equals(ex.getMessage(), errors.get(0)) ? ex.getMessage() : "No details";
+        String details = !errors.isEmpty() && !Objects.equals(ex.getMessage(), errors.get(0)) ? ex.getMessage() : null;
 
         return new ErrorResponse(
                 getRequestURI(request),
@@ -147,7 +147,7 @@ public class RestErrorHandler {
                 reason,
                 message,
                 details,
-                errors,
+                errors.size() > 1 ? errors : null,
                 stackTrace);
     }
 

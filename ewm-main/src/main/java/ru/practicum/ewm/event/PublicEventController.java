@@ -30,21 +30,21 @@ public class PublicEventController {
      * This is a temporary solution for testing the client
      */
 
-    @GetMapping("/stats")
-    @Operation(summary = "findStats")
-    public ResponseEntity<List<StatsDtoResponse>> findStats() {
-        try {
-            return statsClient.find(
-                    LocalDateTime.now().minusDays(50),
-                    LocalDateTime.now().plusDays(1),
-                    List.of("/events", "/events/1", "/events/2"),
-                    true);
-        } catch (RestClientException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(List.of());
-        }
-    }
+//    @GetMapping("/stats")
+//    @Operation(summary = "findStats")
+//    public ResponseEntity<List<StatsDtoResponse>> findStats() {
+//        try {
+//            return statsClient.find(
+//                    LocalDateTime.now().minusDays(50),
+//                    LocalDateTime.now().plusDays(1),
+//                    List.of("/events", "/events/1", "/events/2"),
+//                    true);
+//        } catch (RestClientException e) {
+//            log.error(e.getMessage());
+//            e.printStackTrace();
+//            return ResponseEntity.status(500).body(List.of());
+//        }
+//    }
 
     @GetMapping
     @Operation(summary = "findAll")
