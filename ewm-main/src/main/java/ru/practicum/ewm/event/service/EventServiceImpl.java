@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import ru.practicum.ewm.app.utill.CustomPageRequest;
 import ru.practicum.ewm.event.model.*;
 import ru.practicum.ewm.event.storage.EventRepository;
@@ -64,6 +65,15 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toDto(entity);
     }
 
+    @Override
+    public EventDtoFull updateById(Long initiatorId, Long eventId, EventDtoUpdateUserRequest dto) {
+        checkId(userRepository, initiatorId);
+        Event entity = getNonNullObject(eventRepository, eventId);
+        entity = eventMapper.updateEntity(dto, entity);
+        entity = eventRepository.save(entity);
+        return eventMapper.toDto(entity);
+    }
+
     private void setViews(List<Event> events) {
         setViews(events, LocalDateTime.of(0, 1, 1, 0, 0, 0), LocalDateTime.now());
     }
@@ -75,8 +85,16 @@ public class EventServiceImpl implements EventService {
         List<String> uris = events.stream()
                 .map(event -> "/events/" + event.getId())
                 .collect(Collectors.toList());
-        ResponseEntity<List<StatsDtoResponse>> response = statsClient.find(start, end, uris, true);
-        events.forEach(event -> setViewsFromSources(event, response.getBody()));
+        ResponseEntity<List<StatsDtoResponse>> response = null;
+        try {
+            response = statsClient.find(start, end, uris, true);
+        } catch (RestClientException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+        ResponseEntity<List<StatsDtoResponse>> finalResponse = response;
+        events.forEach(event -> setViewsFromSources(event, finalResponse.getBody()));
     }
 
     private void setViewsFromSources(Event event, List<StatsDtoResponse> sources) {

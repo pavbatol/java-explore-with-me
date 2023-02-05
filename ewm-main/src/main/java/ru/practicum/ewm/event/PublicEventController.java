@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.StatsDtoResponse;
@@ -32,11 +33,17 @@ public class PublicEventController {
     @GetMapping("/stats")
     @Operation(summary = "findStats")
     public ResponseEntity<List<StatsDtoResponse>> findStats() {
-        return statsClient.find(
-                LocalDateTime.now().minusDays(50),
-                LocalDateTime.now().plusDays(1),
-                List.of("/events", "/events/1", "/events/2"),
-                true);
+        try {
+            return statsClient.find(
+                    LocalDateTime.now().minusDays(50),
+                    LocalDateTime.now().plusDays(1),
+                    List.of("/events", "/events/1", "/events/2"),
+                    true);
+        } catch (RestClientException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(List.of());
+        }
     }
 
     @GetMapping

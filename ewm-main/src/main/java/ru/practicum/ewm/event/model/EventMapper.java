@@ -1,7 +1,6 @@
 package ru.practicum.ewm.event.model;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import ru.practicum.ewm.app.BaseMapper;
 
 import java.util.List;
@@ -26,4 +25,8 @@ public interface EventMapper extends BaseMapper<Event, EventDtoFull> {
     EventDtoShort toShortDto(Event entity);
 
     List<EventDtoShort> toShortDtos(List<Event> entities);
+
+    @Mapping(target = "id", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Event updateEntity(EventDtoUpdateUserRequest dto, @MappingTarget Event targetEntity);
 }

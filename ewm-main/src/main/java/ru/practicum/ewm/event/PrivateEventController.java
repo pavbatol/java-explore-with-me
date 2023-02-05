@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.model.EventDtoFull;
 import ru.practicum.ewm.event.model.EventDtoNew;
 import ru.practicum.ewm.event.model.EventDtoShort;
+import ru.practicum.ewm.event.model.EventDtoUpdateUserRequest;
 import ru.practicum.ewm.event.service.EventService;
 
 import javax.validation.Valid;
@@ -58,12 +59,14 @@ public class PrivateEventController {
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
-//    @PatchMapping("/{eventId}")
-//    @Operation(summary = "updateById")
-//    public ResponseEntity<EventDtoFull> updateById(
-//            @PathVariable("userId") Long initiatorId,
-//            @PathVariable("eventId") Long eventId) {
-//        log.debug("PATCH updateById() with initiatorId: {}, eventId: {}", initiatorId, eventId);
-//
-//    }
+    @PatchMapping("/{eventId}")
+    @Operation(summary = "updateById")
+    public ResponseEntity<EventDtoFull> updateById(
+            @PathVariable("userId") Long initiatorId,
+            @PathVariable("eventId") Long eventId,
+            @Validated @RequestBody EventDtoUpdateUserRequest dto) {
+        log.debug("PATCH updateById() with initiatorId: {}, eventId: {}, dto: {}", initiatorId, eventId, dto);
+        EventDtoFull body = eventService.updateById(initiatorId, eventId, dto);
+        return ResponseEntity.status(HttpStatus.OK).body(body);
+    }
 }
