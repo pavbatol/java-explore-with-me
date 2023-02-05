@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import java.time.format.DateTimeFormatter;
 
 @Configuration
-public class ObjectMapperConfig {
+public class DateConfig {
 
     @Value("${app.format.date}")
     private String dateFormat;

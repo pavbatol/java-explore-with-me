@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import ru.practicum.ewm.app.utill.CustomPageRequest;
+import ru.practicum.ewm.category.storage.CategoryRepository;
 import ru.practicum.ewm.event.model.*;
 import ru.practicum.ewm.event.storage.EventRepository;
 import ru.practicum.ewm.user.storage.UserRepository;
@@ -32,15 +33,29 @@ public class EventServiceImpl implements EventService {
     private static final String ENTITY_SIMPLE_NAME = Event.class.getSimpleName();
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final EventMapper eventMapper;
     private final StatsClient statsClient;
 
     @Override
     public EventDtoFull add(Long userId, EventDtoNew dto) {
         checkId(userRepository, userId);
+        checkId(categoryRepository, dto.getCategoryId());
         Event entity = eventMapper.toEntity(dto, userId);
         Event added = eventRepository.save(entity);
         return eventMapper.toDto(added);
+    }
+
+    @Override
+    public EventDtoFull updateById(Long initiatorId, Long eventId, EventDtoUpdateUserRequest dto) {
+        checkId(userRepository, initiatorId);
+        if (Objects.nonNull(dto.getCategoryId())) {
+            checkId(categoryRepository, dto.getCategoryId());
+        }
+        Event entity = getNonNullObject(eventRepository, eventId);
+        entity = eventMapper.updateEntity(dto, entity, categoryRepository);
+        entity = eventRepository.save(entity);
+        return eventMapper.toDto(entity);
     }
 
     @Override
@@ -62,15 +77,6 @@ public class EventServiceImpl implements EventService {
         Event entity = getNonNullObject(eventRepository, eventId);
         log.debug("Found {}: {}", ENTITY_SIMPLE_NAME, entity);
         setViews(List.of(entity));
-        return eventMapper.toDto(entity);
-    }
-
-    @Override
-    public EventDtoFull updateById(Long initiatorId, Long eventId, EventDtoUpdateUserRequest dto) {
-        checkId(userRepository, initiatorId);
-        Event entity = getNonNullObject(eventRepository, eventId);
-        entity = eventMapper.updateEntity(dto, entity);
-        entity = eventRepository.save(entity);
         return eventMapper.toDto(entity);
     }
 

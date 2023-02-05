@@ -31,7 +31,7 @@ public class PrivateEventController {
     @Operation(summary = "add")
     public ResponseEntity<EventDtoFull> add(
             @PathVariable("userId") Long userId,
-            @Valid @RequestBody EventDtoNew dto) {
+            @RequestBody @Valid EventDtoNew dto) {
         log.debug("POST add() with {}", dto);
         EventDtoFull body = eventService.add(userId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
@@ -64,7 +64,7 @@ public class PrivateEventController {
     public ResponseEntity<EventDtoFull> updateById(
             @PathVariable("userId") Long initiatorId,
             @PathVariable("eventId") Long eventId,
-            @Validated @RequestBody EventDtoUpdateUserRequest dto) {
+            @RequestBody @Valid EventDtoUpdateUserRequest dto) {
         log.debug("PATCH updateById() with initiatorId: {}, eventId: {}, dto: {}", initiatorId, eventId, dto);
         EventDtoFull body = eventService.updateById(initiatorId, eventId, dto);
         return ResponseEntity.status(HttpStatus.OK).body(body);

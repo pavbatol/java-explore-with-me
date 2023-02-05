@@ -44,6 +44,7 @@ public class RestErrorHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     protected ResponseEntity<Object> handleMethodArgumentNotValidEx(MethodArgumentNotValidException ex, WebRequest request) {
         return makeResponseEntity(INCORRECTLY_MADE_REQUEST, ex, BAD_REQUEST, request);
+////        return makeResponseEntity(INCORRECTLY_MADE_REQUEST, ex, CONFLICT, request);
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
@@ -58,7 +59,8 @@ public class RestErrorHandler {
 
     @ExceptionHandler({HttpMessageNotReadableException.class})
     protected ResponseEntity<Object> handleHttpMessageNotReadableEx(HttpMessageNotReadableException ex, WebRequest request) {
-        return makeResponseEntity(NOT_READABLE_JSON, ex, BAD_REQUEST, request);
+////        return makeResponseEntity(NOT_READABLE_JSON, ex, BAD_REQUEST, request);
+        return makeResponseEntity(NOT_READABLE_JSON, ex, CONFLICT, request);
     }
 
     @ExceptionHandler({NoHandlerFoundException.class})

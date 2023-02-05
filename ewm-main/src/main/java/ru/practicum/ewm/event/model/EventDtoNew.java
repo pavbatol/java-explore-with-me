@@ -2,6 +2,7 @@ package ru.practicum.ewm.event.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
+import ru.practicum.ewm.app.validation.annotated.MinDateTime;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,7 @@ public class EventDtoNew {
     String description;
 
     @NotNull
+    @MinDateTime
     LocalDateTime eventDate;
 
     @NotNull
