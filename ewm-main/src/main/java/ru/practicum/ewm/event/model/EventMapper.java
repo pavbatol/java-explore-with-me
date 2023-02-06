@@ -5,6 +5,7 @@ import ru.practicum.ewm.app.BaseMapper;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.storage.CategoryRepository;
 import ru.practicum.ewm.event.model.enums.ActionState;
+import ru.practicum.ewm.event.model.enums.AdminActionState;
 import ru.practicum.ewm.event.model.enums.EventState;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public interface EventMapper extends BaseMapper<Event, EventDtoFull> {
     @Mapping(target = "category", source = "dto.categoryId", qualifiedByName = "setCategory")
     @Mapping(target = "latitude", source = "dto.location.lat")
     @Mapping(target = "longitude", source = "dto.location.lon")
-    @Mapping(target = "state", source = "dto.stateAction", qualifiedByName = "setEventState")
+    @Mapping(target = "state", source = "dto.stateAction", qualifiedByName = "userSetEventState")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Event updateEntity(EventDtoUpdateUserRequest dto, @MappingTarget Event targetEntity, @Context CategoryRepository categoryRepository);
 
@@ -45,8 +46,21 @@ public interface EventMapper extends BaseMapper<Event, EventDtoFull> {
         return getNonNullObject(categoryRepository, catId);
     }
 
-    @Named("setEventState")
+    @Named("userSetEventState")
     default EventState getEventState(ActionState actionState) {
         return actionState.equals(ActionState.CANCEL_REVIEW) ? EventState.CANCELED : EventState.PENDING;
     }
+
+    @Named("adminSetEventState")
+    default EventState getEventState(AdminActionState actionState) {
+        return actionState.equals(AdminActionState.PUBLISH_EVENT) ? EventState.PUBLISHED : EventState.CANCELED;
+    }
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "category", source = "dto.categoryId", qualifiedByName = "setCategory")
+    @Mapping(target = "latitude", source = "dto.location.lat")
+    @Mapping(target = "longitude", source = "dto.location.lon")
+    @Mapping(target = "state", source = "dto.stateAction", qualifiedByName = "adminSetEventState")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Event updateEntity(EventDtoUpdateAdminRequest dto, @MappingTarget Event targetEntity, @Context CategoryRepository categoryRepository);
 }

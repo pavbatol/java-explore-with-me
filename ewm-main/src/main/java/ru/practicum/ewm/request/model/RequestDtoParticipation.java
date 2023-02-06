@@ -1,9 +1,8 @@
 package ru.practicum.ewm.request.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
-import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.request.model.enums.RequestState;
-import ru.practicum.ewm.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +13,11 @@ public class RequestDtoParticipation {
 
     LocalDateTime created;
 
-    Event event;
+    @JsonProperty("event")
+    Long eventId;
 
-    User requester;
+    @JsonProperty("requester")
+    Long requesterId;
 
     RequestState status;
 }

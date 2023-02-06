@@ -12,6 +12,7 @@ import ru.practicum.ewm.app.exception.ConflictException;
 import ru.practicum.ewm.app.utill.CustomPageRequest;
 import ru.practicum.ewm.category.storage.CategoryRepository;
 import ru.practicum.ewm.event.model.*;
+import ru.practicum.ewm.event.model.enums.AdminActionState;
 import ru.practicum.ewm.event.model.enums.EventState;
 import ru.practicum.ewm.event.storage.EventRepository;
 import ru.practicum.ewm.request.model.Request;
@@ -82,7 +83,6 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventRequestStatusUpdateResult updateRequestState(Long initiatorId, Long eventId, EventRequestStatusUpdateRequest dto) {
         checkId(userRepository, initiatorId);
-        checkId(eventRepository, eventId);
         Event event = getNonNullObject(eventRepository, eventId);
         List<Request> requests = requestRepository.findByIdIn(dto.getRequestIds());
         if (!event.getRequestModeration() || event.getParticipantLimit() <= 0) {
@@ -98,7 +98,7 @@ public class EventServiceImpl implements EventService {
                     if (RequestState.PENDING != request.getStatus()) {
                         throw new ConflictException("Request must have status PENDING");
                     }
-                    if (event.getParticipantLimit() - event.getConfirmedRequests() > 0) {
+                    if (dto.getStatus() == RequestState.CONFIRMED && event.getParticipantLimit() - event.getConfirmedRequests() > 0) {
                         request.setStatus(RequestState.CONFIRMED);
                         event.setConfirmedRequests(event.getConfirmedRequests() + 1);
                         confirmed.add(requestMapper.toDto(request));
@@ -112,8 +112,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDtoFull adminUpdateById(String eventId, EventDtoUpdateAdminRequest dto) {
-        return null;
+    public EventDtoFull adminUpdateById(Long eventId, EventDtoUpdateAdminRequest dto) {
+        if (Objects.nonNull(dto.getCategoryId())) {
+            checkId(categoryRepository, dto.getCategoryId());
+        }
+        Event entity = getNonNullObject(eventRepository, eventId);
+        checkAdminActionState(dto, entity);
+        checkEventDate(entity, dto);
+        entity = eventMapper.updateEntity(dto, entity, categoryRepository);
+        entity = eventRepository.save(entity);
+        return eventMapper.toDto(entity);
     }
 
     @Override
@@ -189,4 +197,24 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    private void checkAdminActionState(EventDtoUpdateAdminRequest dto, Event entity) {
+        if (Objects.isNull(dto.getStateAction())) {
+            return;
+        }
+        if (dto.getStateAction() == AdminActionState.PUBLISH_EVENT && entity.getState() != EventState.PENDING) {
+            throw new ConflictException("Event can be published only if it is in the waiting state for publication");
+        }
+        if (dto.getStateAction() == AdminActionState.REJECT_EVENT && entity.getState() == EventState.PUBLISHED) {
+            throw new ConflictException("Event can be rejected only if it has not been published yet");
+        }
+    }
+
+    private void checkEventDate(Event entity, EventDtoUpdateAdminRequest dto) {
+        if (dto.getEventDate() != null) {
+            if (entity.getPublishedOn() == null || dto.getEventDate().isBefore(entity.getPublishedOn().plusHours(1))) {
+                throw new ConflictException("The start date of the event to be modified must be no earlier " +
+                        "than an hour from the date of publication");
+            }
+        }
+    }
 }
