@@ -112,6 +112,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public EventDtoFull adminUpdateById(String eventId, EventDtoUpdateAdminRequest dto) {
+        return null;
+    }
+
+    @Override
+    public List<EventDtoFull> adminFindAllByFilter(AdminSearchFilter filter, Integer from, Integer size) {
+        return null;
+    }
+
+    @Override
     public List<EventDtoShort> findAllByInitiatorId(Long initiatorId, Integer from, Integer size) {
         checkId(userRepository, initiatorId);
         Sort sort = Sort.by(ID).ascending();

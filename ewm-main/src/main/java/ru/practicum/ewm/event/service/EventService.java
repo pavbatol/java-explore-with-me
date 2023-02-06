@@ -17,4 +17,8 @@ public interface EventService {
     List<RequestDtoParticipation> findRequestsByEventId(Long initiatorId, Long eventId);
 
     EventRequestStatusUpdateResult updateRequestState(Long initiatorId, Long eventId, EventRequestStatusUpdateRequest dto);
+
+    EventDtoFull adminUpdateById(String eventId, EventDtoUpdateAdminRequest dto);
+
+    List<EventDtoFull> adminFindAllByFilter(AdminSearchFilter filter, Integer from, Integer size);
 }

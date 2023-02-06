@@ -37,7 +37,7 @@ public class PrivateEventController {
 
     @GetMapping
     @Operation(summary = "findAllByInitiatorId")
-    public ResponseEntity<Object> findAllByInitiatorId(
+    public ResponseEntity<List<EventDtoShort>> findAllByInitiatorId(
             @PathVariable("userId") Long initiatorId,
             @PositiveOrZero @RequestParam(value = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(value = "size", defaultValue = "10") Integer size
