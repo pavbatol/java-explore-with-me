@@ -8,14 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClientException;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.stats.client.StatsClient;
-import ru.practicum.stats.dto.StatsDtoResponse;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @RestController

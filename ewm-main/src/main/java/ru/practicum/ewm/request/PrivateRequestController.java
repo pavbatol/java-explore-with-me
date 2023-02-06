@@ -7,10 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.event.model.EventDtoFull;
-import ru.practicum.ewm.event.model.EventDtoNew;
-
-import javax.validation.Valid;
+import ru.practicum.ewm.request.model.RequestDtoParticipation;
+import ru.practicum.ewm.request.service.RequestService;
 
 @Slf4j
 @Validated
@@ -18,6 +16,8 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/users/{userId}/requests")
 public class PrivateRequestController {
+
+    private final RequestService requestService;
 
     /*
     Обратите внимание:
@@ -28,13 +28,13 @@ public class PrivateRequestController {
     если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного
      */
 
-//    @PostMapping
-//    @Operation(summary = "add")
-//    public ResponseEntity<EventDtoFull> add(
-//            @PathVariable("userId") Long userId,
-//            @RequestBody @Valid EventDtoNew dto) {
-//        log.debug("POST add() with {}", dto);
-//        EventDtoFull body = eventService.add(userId, dto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(body);
-//    }
+    @PostMapping  ///users/{userId}/requests
+    @Operation(summary = "add")
+    public ResponseEntity<RequestDtoParticipation> add(
+            @PathVariable("userId") Long userId,
+            @RequestParam("eventId") Long eventId) {
+        log.debug("POST add() with userId: {}, eventId:{}", userId, eventId);
+        RequestDtoParticipation body = requestService.add(userId, eventId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+    }
 }
