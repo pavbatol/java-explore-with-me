@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import ru.practicum.ewm.app.exception.ConflictException;
 import ru.practicum.ewm.app.utill.CustomPageRequest;
@@ -13,6 +14,11 @@ import ru.practicum.ewm.category.storage.CategoryRepository;
 import ru.practicum.ewm.event.model.*;
 import ru.practicum.ewm.event.model.enums.EventState;
 import ru.practicum.ewm.event.storage.EventRepository;
+import ru.practicum.ewm.request.model.Request;
+import ru.practicum.ewm.request.model.RequestDtoParticipation;
+import ru.practicum.ewm.request.model.RequestMapper;
+import ru.practicum.ewm.request.model.enums.RequestState;
+import ru.practicum.ewm.request.storage.RequestRepository;
 import ru.practicum.ewm.user.storage.UserRepository;
 import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.StatsDtoResponse;
@@ -36,7 +42,9 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final RequestRepository requestRepository;
     private final EventMapper eventMapper;
+    private final RequestMapper requestMapper;
     private final StatsClient statsClient;
 
     @Override
@@ -60,6 +68,47 @@ public class EventServiceImpl implements EventService {
         entity = eventMapper.updateEntity(dto, entity, categoryRepository);
         entity = eventRepository.save(entity);
         return eventMapper.toDto(entity);
+    }
+
+    @Override
+    public List<RequestDtoParticipation> findRequestsByEventId(Long initiatorId, Long eventId) {
+        checkId(userRepository, initiatorId);
+        checkId(eventRepository, eventId);
+        List<Request> entities = requestRepository.findAllByEventId(eventId);
+        return requestMapper.toDtos(entities);
+    }
+
+    @Override
+    @Transactional
+    public EventRequestStatusUpdateResult updateRequestState(Long initiatorId, Long eventId, EventRequestStatusUpdateRequest dto) {
+        checkId(userRepository, initiatorId);
+        checkId(eventRepository, eventId);
+        Event event = getNonNullObject(eventRepository, eventId);
+        List<Request> requests = requestRepository.findByIdIn(dto.getRequestIds());
+        if (!event.getRequestModeration() || event.getParticipantLimit() <= 0) {
+            throw new ConflictException("There is no need to confirm requests");
+        }
+        if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
+            throw new ConflictException("The participant limit has been reached");
+        }
+        List<RequestDtoParticipation> confirmed = new ArrayList<>();
+        List<RequestDtoParticipation> rejected = new ArrayList<>();
+        requests.forEach(
+                request -> {
+                    if (RequestState.PENDING != request.getStatus()) {
+                        throw new ConflictException("Request must have status PENDING");
+                    }
+                    if (event.getParticipantLimit() - event.getConfirmedRequests() > 0) {
+                        request.setStatus(RequestState.CONFIRMED);
+                        event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                        confirmed.add(requestMapper.toDto(request));
+                    } else {
+                        request.setStatus(RequestState.REJECTED);
+                        rejected.add(requestMapper.toDto(request));
+                    }
+                }
+        );
+        return new EventRequestStatusUpdateResult(confirmed, rejected);
     }
 
     @Override

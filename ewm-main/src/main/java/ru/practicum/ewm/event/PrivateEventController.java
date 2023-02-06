@@ -7,11 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.event.model.EventDtoFull;
-import ru.practicum.ewm.event.model.EventDtoNew;
-import ru.practicum.ewm.event.model.EventDtoShort;
-import ru.practicum.ewm.event.model.EventDtoUpdateUserRequest;
+import ru.practicum.ewm.event.model.*;
 import ru.practicum.ewm.event.service.EventService;
+import ru.practicum.ewm.request.model.RequestDtoParticipation;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -70,21 +68,24 @@ public class PrivateEventController {
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
-/*
-Не реализовано 2 энд-поинта:
+    @GetMapping("/{eventId}/requests")
+    @Operation(summary = "findRequestsByEventId")
+    public ResponseEntity<List<RequestDtoParticipation>> findRequestsByEventId(
+            @PathVariable("userId") Long initiatorId,
+            @PathVariable("eventId") Long eventId) {
+        log.debug("GET findRequestsByEventId() with initiatorId: {}, eventId: {}", initiatorId, eventId);
+        List<RequestDtoParticipation> body = eventService.findRequestsByEventId(initiatorId, eventId);
+        return ResponseEntity.status(HttpStatus.OK).body(body);
+    }
 
-GET
-/users/{userId}/events/{eventId}
-//В случае, если по заданным фильтрам не найдено ни одной заявки, возвращает пустой список
-
-PATCH
-/users/{userId}/events/{eventId} //В случае, если по заданным фильтрам не найдено ни одной заявки, возвращает пустой список
-    Обратите внимание:
-    если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется
-    нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие (Ожидается код ошибки 409)
-    статус можно изменить только у заявок, находящихся в состоянии ожидания (Ожидается код ошибки 409)
-    если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки необходимо отклонить
-*/
-
-
+    @PatchMapping("/{eventId}/requests")
+    @Operation(summary = "updateRequestState")
+    public ResponseEntity<EventRequestStatusUpdateResult> updateRequestState(
+            @PathVariable("userId") Long initiatorId,
+            @PathVariable("eventId") Long eventId,
+            @RequestBody EventRequestStatusUpdateRequest dto) {
+        log.debug("PATCH updateRequestState() with initiatorId: {}, eventId: {}, dto: {}", initiatorId, eventId, dto);
+        EventRequestStatusUpdateResult body = eventService.updateRequestState(initiatorId, eventId, dto);
+        return ResponseEntity.status(HttpStatus.OK).body(body);
+    }
 }

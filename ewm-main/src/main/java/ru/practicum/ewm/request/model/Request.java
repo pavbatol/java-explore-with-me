@@ -30,7 +30,6 @@ public class Request {
     @Column(name = "request_date", nullable = false)
     LocalDateTime created;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     Event event;
@@ -40,5 +39,6 @@ public class Request {
     User requester;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     RequestState status;
 }
