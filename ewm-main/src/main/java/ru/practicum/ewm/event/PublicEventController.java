@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import ru.practicum.ewm.event.model.AdminSearchFilter;
+import ru.practicum.ewm.event.model.EventDtoFull;
 import ru.practicum.ewm.event.model.EventDtoShort;
 import ru.practicum.ewm.event.model.enums.EventSort;
 import ru.practicum.ewm.event.service.EventService;
@@ -33,23 +34,6 @@ public class PublicEventController {
     @Value("${app.format.date-time}")
     private String format;
 
-
-//    @GetMapping("/stats")
-//    @Operation(summary = "findStats")
-//    public ResponseEntity<List<StatsDtoResponse>> findStats() {
-//        try {
-//            return statsClient.find(
-//                    LocalDateTime.now().minusDays(50),
-//                    LocalDateTime.now().plusDays(1),
-//                    List.of("/events", "/events/1", "/events/2"),
-//                    true);
-//        } catch (RestClientException e) {
-//            log.error(e.getMessage());
-//            e.printStackTrace();
-//            return ResponseEntity.status(500).body(List.of());
-//        }
-//    }
-
     @GetMapping
     @Operation(summary = "publicFindAllByFilter")
     public ResponseEntity<List<EventDtoShort>> publicFindAllByFilter(
@@ -67,13 +51,7 @@ public class PublicEventController {
                         "with text: {}, categoryIds: {},paid: {},  rangeStart: {}, rangeEnd {}, onlyAvailable:{}, sort:{}, from: {}, size: {}",
                 text, categoryIds, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
 
-        log.debug("Sending request to stats");
-        try {
-            statsClient.add(servletRequest);
-        } catch (RestClientException e) {
-            log.error("Can't connect to the statistics server" + e.getMessage());
-            e.printStackTrace();
-        }
+        sendToStats(servletRequest);
 
         AdminSearchFilter filter = new AdminSearchFilter(
                 null,
@@ -85,24 +63,35 @@ public class PublicEventController {
                 paid,
                 onlyAvailable
         );
-        List<EventDtoShort> body = eventService.publicFindAllByFilter(
-                filter,
-                sort != null ? EventSort.by(sort) : EventSort.EVENT_DATE,
-                from,
-                size);
+        EventSort eventSort = sort != null ? EventSort.by(sort) : EventSort.EVENT_DATE;
+        List<EventDtoShort> body = eventService.publicFindAllByFilter(filter, eventSort, from, size);
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "findById")
-    public ResponseEntity<Object> findById(@PathVariable("id") Long eventId,
-                                           HttpServletRequest servletRequest) {
-        log.debug("GET findById() Test request received");
-        statsClient.add(servletRequest);
-        return null;
+    @Operation(summary = "publicFindById")
+    public ResponseEntity<Object> publicFindById(
+            HttpServletRequest servletRequest,
+            @PathVariable("id") Long eventId) {
+        log.debug("GET publicFindById() with eventId: {}", eventId);
+
+        sendToStats(servletRequest);
+
+        EventDtoFull body = eventService.publicFindById(eventId);
+        return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
     private LocalDateTime toLocalDateTime(String value) {
         return value != null ? LocalDateTime.parse(value, DateTimeFormatter.ofPattern(format)) : null;
+    }
+
+    private void sendToStats(HttpServletRequest servletRequest) {
+        log.debug("Sending request to stats");
+        try {
+            statsClient.add(servletRequest);
+        } catch (RestClientException e) {
+            log.error("Can't connect to the statistics server: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

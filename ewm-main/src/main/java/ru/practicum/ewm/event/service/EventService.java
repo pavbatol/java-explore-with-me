@@ -24,4 +24,6 @@ public interface EventService {
     List<EventDtoFull> adminFindAllByFilter(AdminSearchFilter filter, Integer from, Integer size);
 
     List<EventDtoShort> publicFindAllByFilter(AdminSearchFilter filter, EventSort eventSort, Integer from, Integer size);
+
+    EventDtoFull publicFindById(Long eventId);
 }

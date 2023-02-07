@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import ru.practicum.ewm.app.exception.ConflictException;
+import ru.practicum.ewm.app.exception.NotFoundException;
 import ru.practicum.ewm.app.utill.CustomPageRequest;
 import ru.practicum.ewm.category.storage.CategoryRepository;
 import ru.practicum.ewm.event.model.*;
@@ -149,6 +150,17 @@ public class EventServiceImpl implements EventService {
         List<Event> entities = page.getContent();
         setViews(entities);
         return eventMapper.toShortDtos(page.getContent());
+    }
+
+    @Override
+    public EventDtoFull publicFindById(Long eventId) {
+        Event entity = getNonNullObject(eventRepository, eventId);
+        log.debug("Found {}: {}", ENTITY_SIMPLE_NAME, entity);
+        if (entity.getState() != EventState.PUBLISHED) {
+            throw new NotFoundException(String.format("%s with id=%s was not found", ENTITY_SIMPLE_NAME, eventId));
+        }
+        setViews(List.of(entity));
+        return eventMapper.toDto(entity);
     }
 
     @Override
