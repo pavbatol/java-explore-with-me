@@ -67,6 +67,6 @@ public class AdminEventController {
     }
 
     private LocalDateTime toLocalDateTime(String value) {
-        return LocalDateTime.parse(value, DateTimeFormatter.ofPattern(format));
+        return value != null ? LocalDateTime.parse(value, DateTimeFormatter.ofPattern(format)) : null;
     }
 }

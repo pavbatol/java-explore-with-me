@@ -1,5 +1,7 @@
 package ru.practicum.ewm.event.service;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,9 +27,7 @@ import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.StatsDtoResponse;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
@@ -126,7 +126,13 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDtoFull> adminFindAllByFilter(AdminSearchFilter filter, Integer from, Integer size) {
-        return null;
+        Sort sort = Sort.by(ID).ascending();
+        CustomPageRequest pageable = CustomPageRequest.by(from, size, sort);
+        BooleanBuilder booleanBuilder = makeBooleanBuilder(filter);
+        Page<Event> page = eventRepository.findAll(booleanBuilder, pageable);
+        log.debug("Found {}-count: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
+                page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
+        return eventMapper.toDtos(page.getContent());
     }
 
     @Override
@@ -135,7 +141,7 @@ public class EventServiceImpl implements EventService {
         Sort sort = Sort.by(ID).ascending();
         CustomPageRequest pageable = CustomPageRequest.by(from, size, sort);
         Page<Event> page = eventRepository.findAllByInitiatorId(initiatorId, pageable);
-        log.debug("Found {}: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
+        log.debug("Found {}-count: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
                 page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
         List<Event> entities = page.getContent();
         setViews(entities);
@@ -217,5 +223,24 @@ public class EventServiceImpl implements EventService {
                         "than an hour from the date of publication");
             }
         }
+    }
+
+    private BooleanBuilder makeBooleanBuilder(AdminSearchFilter filter) {
+        java.util.function.Predicate<Object> isNullOrEmpty = obj ->
+                Objects.isNull(obj) || (obj instanceof Collection && ((Collection<?>) obj).isEmpty());
+
+        QEvent qEvent = QEvent.event;
+        Predicate userIds = !isNullOrEmpty.test(filter.getUserIds()) ? qEvent.initiator.id.in(filter.getUserIds()) : null;
+        Predicate states = !isNullOrEmpty.test(filter.getStates()) ? qEvent.state.in(filter.getStates()) : null;
+        Predicate categoryIds = !isNullOrEmpty.test(filter.getCategoryIds()) ? qEvent.category.id.in(filter.getCategoryIds()) : null;
+        Predicate rangeStart = !isNullOrEmpty.test(filter.getRangeStart()) ? qEvent.eventDate.after(filter.getRangeStart()) : null;
+        Predicate rangeEnd = !isNullOrEmpty.test(filter.getRangeEnd()) ? qEvent.eventDate.before(filter.getRangeEnd()) : null;
+
+        return new BooleanBuilder()
+                .and(userIds)
+                .and(states)
+                .and(categoryIds)
+                .and(rangeStart)
+                .and(rangeEnd);
     }
 }
