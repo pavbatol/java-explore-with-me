@@ -44,7 +44,6 @@ public class RestErrorHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     protected ResponseEntity<Object> handleMethodArgumentNotValidEx(MethodArgumentNotValidException ex, WebRequest request) {
         return makeResponseEntity(INCORRECTLY_MADE_REQUEST, ex, BAD_REQUEST, request);
-////        return makeResponseEntity(INCORRECTLY_MADE_REQUEST, ex, CONFLICT, request);
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
@@ -59,7 +58,6 @@ public class RestErrorHandler {
 
     @ExceptionHandler({HttpMessageNotReadableException.class})
     protected ResponseEntity<Object> handleHttpMessageNotReadableEx(HttpMessageNotReadableException ex, WebRequest request) {
-////        return makeResponseEntity(NOT_READABLE_JSON, ex, BAD_REQUEST, request);
         return makeResponseEntity(NOT_READABLE_JSON, ex, CONFLICT, request);
     }
 
@@ -87,29 +85,6 @@ public class RestErrorHandler {
     protected ResponseEntity<Object> handleNotFoundEx(ConflictException ex, WebRequest request) {
         return makeResponseEntity(ex.getReason(), ex, CONFLICT, request);
     }
-
-
-    //    @ExceptionHandler({IllegalArgumentException.class})
-//    protected ResponseEntity<Object> handleIllegalArgumentEx(IllegalArgumentException ex, WebRequest request) {
-//        String reason = "!!!IllegalArgumentException";
-//        return makeResponseEntity(reason, ex, BAD_REQUEST, request);
-//    }
-
-//    @ExceptionHandler({ConstraintViolationException.class})
-//    protected ResponseEntity<Object> handleValidateEx(ConstraintViolationException ex, WebRequest request) {
-//        String collect = ex.getConstraintViolations().stream()
-//                .map(cv -> cv.getPropertyPath().toString() + ": " + cv.getMessage())
-//                .collect(Collectors.joining(";"));
-//
-//        String message = "!!Incorrect data";
-//        return makeResponseEntity(message, ex, BAD_REQUEST, request);
-//    }
-
-//    @ExceptionHandler({PersistenceException.class})
-//    protected ResponseEntity<Object> handlePersistenceEx(PersistenceException ex, WebRequest request) {
-//        String reason = "Failed attempt to save";
-//        return makeResponseEntity(reason, ex, BAD_REQUEST, request);
-//    }
 
     @ExceptionHandler
     protected ResponseEntity<Object> handleThrowableEx(Throwable ex, WebRequest request) {

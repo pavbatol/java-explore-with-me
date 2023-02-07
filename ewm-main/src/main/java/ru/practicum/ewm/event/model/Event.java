@@ -28,12 +28,12 @@ public class Event {
     Long id;
 
     @Column(name = "annotation", length = 2000, nullable = false)
-    String annotation; // *
+    String annotation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cat_id", nullable = false)
     @ToString.Exclude
-    Category category; // *
+    Category category;
 
     @Column(name = "confirmed_requests", columnDefinition = "BIGINT DEFAULT 0", nullable = false)
     Long confirmedRequests;
@@ -45,21 +45,21 @@ public class Event {
     String description;
 
     @Column(name = "event_date", nullable = false)
-    LocalDateTime eventDate; // *
+    LocalDateTime eventDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id", nullable = false)
     @ToString.Exclude
-    User initiator; // *
+    User initiator;
 
     @Column(name = "latitude", nullable = false)
-    Double latitude; // *
+    Double latitude;
 
     @Column(name = "longitude", nullable = false)
-    Double longitude; // *
+    Double longitude;
 
     @Column(name = "paid", nullable = false)
-    Boolean paid; // *
+    Boolean paid;
 
     @Column(name = "participantLimit", columnDefinition = "INTEGER DEFAULT 0", nullable = false)
     Integer participantLimit;
@@ -75,7 +75,7 @@ public class Event {
     EventState state;
 
     @Column(name = "title", length = 120, nullable = false)
-    String title; // *
+    String title;
 
     @Transient
     Long views;
