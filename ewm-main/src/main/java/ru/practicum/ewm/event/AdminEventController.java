@@ -44,11 +44,11 @@ public class AdminEventController {
     @GetMapping("/admin/events")
     @Operation(summary = "adminFindAllByFilter")
     public ResponseEntity<List<EventDtoFull>> adminFindAllByFilter(
-            @RequestParam("users") List<Long> userIds,
-            @RequestParam("states") List<EventState> states,
-            @RequestParam("categories") List<Long> categoryIds,
-            @RequestParam("rangeStart") String rangeStart,
-            @RequestParam("rangeEnd") String rangeEnd,
+            @RequestParam(value = "users", required = false) List<Long> userIds,
+            @RequestParam(value = "states", required = false) List<EventState> states,
+            @RequestParam(value = "categories", required = false) List<Long> categoryIds,
+            @RequestParam(value = "rangeStart", required = false) String rangeStart,
+            @RequestParam(value = "rangeEnd", required = false) String rangeEnd,
             @PositiveOrZero @RequestParam(value = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
@@ -60,7 +60,10 @@ public class AdminEventController {
                 states,
                 categoryIds,
                 toLocalDateTime(rangeStart),
-                toLocalDateTime(rangeEnd)
+                toLocalDateTime(rangeEnd),
+                null,
+                null,
+                null
         );
         List<EventDtoFull> body = eventService.adminFindAllByFilter(filter, from, size);
         return ResponseEntity.status(HttpStatus.OK).body(body);

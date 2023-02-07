@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event.service;
 
 import ru.practicum.ewm.event.model.*;
+import ru.practicum.ewm.event.model.enums.EventSort;
 import ru.practicum.ewm.request.model.RequestDtoParticipation;
 
 import java.util.List;
@@ -21,4 +22,6 @@ public interface EventService {
     EventDtoFull adminUpdateById(Long eventId, EventDtoUpdateAdminRequest dto);
 
     List<EventDtoFull> adminFindAllByFilter(AdminSearchFilter filter, Integer from, Integer size);
+
+    List<EventDtoShort> publicFindAllByFilter(AdminSearchFilter filter, EventSort eventSort, Integer from, Integer size);
 }

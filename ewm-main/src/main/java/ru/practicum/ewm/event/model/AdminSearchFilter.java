@@ -13,4 +13,8 @@ public class AdminSearchFilter {
     List<Long> categoryIds;
     LocalDateTime rangeStart;
     LocalDateTime rangeEnd;
+
+    String text;
+    Boolean paid;
+    Boolean onlyAvailable;
 }

@@ -15,6 +15,7 @@ import ru.practicum.ewm.app.utill.CustomPageRequest;
 import ru.practicum.ewm.category.storage.CategoryRepository;
 import ru.practicum.ewm.event.model.*;
 import ru.practicum.ewm.event.model.enums.AdminActionState;
+import ru.practicum.ewm.event.model.enums.EventSort;
 import ru.practicum.ewm.event.model.enums.EventState;
 import ru.practicum.ewm.event.storage.EventRepository;
 import ru.practicum.ewm.request.model.Request;
@@ -136,6 +137,21 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<EventDtoShort> publicFindAllByFilter(AdminSearchFilter filter, EventSort eventSort, Integer from, Integer size) {
+        Sort sort = eventSort == EventSort.EVENT_DATE
+                ? Sort.by("eventDate").ascending()
+                : Sort.by("views").ascending();
+        CustomPageRequest pageable = CustomPageRequest.by(from, size, sort);
+        BooleanBuilder booleanBuilder = makeBooleanBuilder(filter);
+        Page<Event> page = eventRepository.findAll(booleanBuilder, pageable);
+        log.debug("Found {}-count: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
+                page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
+        List<Event> entities = page.getContent();
+        setViews(entities);
+        return eventMapper.toShortDtos(page.getContent());
+    }
+
+    @Override
     public List<EventDtoShort> findAllByInitiatorId(Long initiatorId, Integer from, Integer size) {
         checkId(userRepository, initiatorId);
         Sort sort = Sort.by(ID).ascending();
@@ -145,7 +161,7 @@ public class EventServiceImpl implements EventService {
                 page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
         List<Event> entities = page.getContent();
         setViews(entities);
-        return eventMapper.toShortDtos(page.getContent());
+        return eventMapper.toShortDtos(entities);
     }
 
     @Override
@@ -236,11 +252,20 @@ public class EventServiceImpl implements EventService {
         Predicate rangeStart = !isNullOrEmpty.test(filter.getRangeStart()) ? qEvent.eventDate.after(filter.getRangeStart()) : null;
         Predicate rangeEnd = !isNullOrEmpty.test(filter.getRangeEnd()) ? qEvent.eventDate.before(filter.getRangeEnd()) : null;
 
+        Predicate text = !isNullOrEmpty.test(filter.getText())
+                ? (qEvent.annotation.likeIgnoreCase(filter.getText()).or(qEvent.description.likeIgnoreCase(filter.getText()))) : null;
+        Predicate paid = !isNullOrEmpty.test(filter.getPaid()) ? qEvent.paid.eq(filter.getPaid()) : null;
+        Predicate onlyAvailable = !isNullOrEmpty.test(filter.getOnlyAvailable())
+                ? qEvent.participantLimit.eq(0).or(qEvent.confirmedRequests.lt(qEvent.participantLimit)) : null;
+
         return new BooleanBuilder()
                 .and(userIds)
                 .and(states)
                 .and(categoryIds)
                 .and(rangeStart)
-                .and(rangeEnd);
+                .and(rangeEnd)
+                .and(text)
+                .and(paid)
+                .and(onlyAvailable);
     }
 }
