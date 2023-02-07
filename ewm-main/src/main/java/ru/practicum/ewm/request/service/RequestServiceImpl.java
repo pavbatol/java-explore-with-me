@@ -37,6 +37,7 @@ public class RequestServiceImpl implements RequestService {
         checkNotInitiator(userId, event);
         checkNotRepeatedRequest(userId, eventId);
         checkPublished(event);
+        checkParticipantLimit(event);
         checkNotReachedLimit(event);
         Request request = new Request()
                 .setCreated(LocalDateTime.now())
@@ -44,6 +45,10 @@ public class RequestServiceImpl implements RequestService {
                 .setRequester(new User().setId(userId))
                 .setStatus(event.getRequestModeration() ? RequestState.PENDING : RequestState.CONFIRMED);
         request = requestRepository.save(request);
+        if (!event.getRequestModeration()) {
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+            eventRepository.save(event);
+        }
         return requestMapper.toDto(request);
     }
 
@@ -52,9 +57,7 @@ public class RequestServiceImpl implements RequestService {
         checkId(userRepository, userId);
         Request request = getNonNullObject(requestRepository, requestId);
         checkRequester(userId, request);
-        if (request.getStatus() != RequestState.PENDING) {
-            request.setStatus(RequestState.PENDING);
-        }
+        request.setStatus(RequestState.CANCELED);
         request = requestRepository.save(request);
         return requestMapper.toDto(request);
     }
@@ -81,6 +84,12 @@ public class RequestServiceImpl implements RequestService {
     private void checkPublished(Event event) {
         if (event.getState() != EventState.PUBLISHED) {
             throw new ConflictException("You cannot participate in an unpublished event");
+        }
+    }
+
+    private void checkParticipantLimit(Event event) {
+        if (event.getParticipantLimit() - event.getConfirmedRequests() <= 0) {
+            throw new ConflictException("The limit of participation requests has been reached");
         }
     }
 

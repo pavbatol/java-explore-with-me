@@ -211,7 +211,8 @@ public class EventServiceImpl implements EventService {
 
     private void checkEventDate(Event entity, EventDtoUpdateAdminRequest dto) {
         if (dto.getEventDate() != null) {
-            if (entity.getPublishedOn() == null || dto.getEventDate().isBefore(entity.getPublishedOn().plusHours(1))) {
+            if (entity.getPublishedOn() != null && dto.getEventDate().isBefore(entity.getPublishedOn().plusHours(1))
+                    || dto.getEventDate().isBefore(LocalDateTime.now())) {
                 throw new ConflictException("The start date of the event to be modified must be no earlier " +
                         "than an hour from the date of publication");
             }

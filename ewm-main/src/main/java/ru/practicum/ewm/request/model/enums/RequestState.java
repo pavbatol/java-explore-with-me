@@ -3,7 +3,8 @@ package ru.practicum.ewm.request.model.enums;
 public enum RequestState {
     PENDING,
     CONFIRMED,
-    REJECTED;
+    REJECTED,
+    CANCELED;
 
     public static RequestState by(String stateName) {
         try {
