@@ -1,7 +1,9 @@
 package ru.practicum.ewm.event.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,7 +31,10 @@ import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.StatsDtoResponse;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
@@ -49,6 +54,7 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
     private final RequestMapper requestMapper;
     private final StatsClient statsClient;
+    private final ObjectMapper objectMapper;
 
     @Override
     public EventDtoFull add(Long userId, EventDtoNew dto) {
@@ -196,16 +202,24 @@ public class EventServiceImpl implements EventService {
         List<String> uris = events.stream()
                 .map(event -> "/events/" + event.getId())
                 .collect(Collectors.toList());
-        ResponseEntity<List<StatsDtoResponse>> response = null;
+
+        List<StatsDtoResponse> dtos = null;
         try {
-            response = statsClient.find(start, end, uris, true);
-        } catch (RestClientException e) {
+            ResponseEntity<Object> responseEntity = statsClient.find(start, end, uris, true);
+            Object body = responseEntity.getBody();
+            if (body != null) {
+                TypeReference<List<StatsDtoResponse>> typeRef = new TypeReference<>() {
+                };
+                dtos = objectMapper.readValue(body.toString(), typeRef);
+            }
+        } catch (RestClientException | JsonProcessingException e) {
             log.error(e.getMessage());
             e.printStackTrace();
             return;
         }
-        ResponseEntity<List<StatsDtoResponse>> finalResponse = response;
-        events.forEach(event -> setViewsFromSources(event, finalResponse.getBody()));
+
+        List<StatsDtoResponse> finalDtos = dtos;
+        events.forEach(event -> setViewsFromSources(event, finalDtos != null ? finalDtos : List.of()));
     }
 
     private void setViewsFromSources(Event event, List<StatsDtoResponse> sources) {

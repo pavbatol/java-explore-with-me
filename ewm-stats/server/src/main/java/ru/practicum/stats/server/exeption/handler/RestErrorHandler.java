@@ -30,14 +30,10 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RestControllerAdvice
 public class RestErrorHandler extends ResponseEntityExceptionHandler {
 
-    public static final String FAILED_ATTEMPT_TO_SAVE = "Failed attempt to save";
-    public static final String UNREADABLE_JSON = "Unreadable JSON";
-    public static final String INCORRECT_DATA = "Incorrect data";
-    public static final String UNEXPECTED_ERROR = "Unexpected error";
-
     @ExceptionHandler({PersistenceException.class})
     protected ResponseEntity<Object> handlePersistenceEx(PersistenceException ex, WebRequest request) {
-        return makeResponseEntity(FAILED_ATTEMPT_TO_SAVE, ex, BAD_REQUEST, request);
+        String message = "Failed attempt to save";
+        return makeResponseEntity(message, ex, BAD_REQUEST, request);
     }
 
     @NonNull
@@ -46,7 +42,8 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatus status,
                                                                   @NonNull WebRequest request) {
-        return makeResponseEntity(UNREADABLE_JSON, ex, status, request);
+        String message = "Unreadable JSON";
+        return makeResponseEntity(message, ex, status, request);
     }
 
     @NonNull
@@ -55,19 +52,21 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatus status,
                                                                   @NonNull WebRequest request) {
-        return makeResponseEntity(INCORRECT_DATA, ex, status, request);
+        String message = "Incorrect data";
+        return makeResponseEntity(message, ex, status, request);
     }
 
     @ExceptionHandler
     protected ResponseEntity<Object> handleThrowableEx(Throwable ex, WebRequest request) {
-        return makeResponseEntity(UNEXPECTED_ERROR, ex, INTERNAL_SERVER_ERROR, request);
+        String message = "Unexpected error";
+        return makeResponseEntity(message, ex, INTERNAL_SERVER_ERROR, request);
     }
 
     private ResponseEntity<Object> makeResponseEntity(String message,
                                                       Throwable ex,
                                                       HttpStatus status,
                                                       WebRequest request) {
-        log.error("{}: {}", message, ex.getMessage());
+        log.error(message + ": {}", ex.getMessage(), ex);
         ErrorResponse errorResponse = makeBody(message, status, request, ex);
         return new ResponseEntity<>(errorResponse, status);
     }

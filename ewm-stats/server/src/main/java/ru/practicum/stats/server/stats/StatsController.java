@@ -1,6 +1,5 @@
 package ru.practicum.stats.server.stats;
 
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +24,6 @@ public class StatsController {
     private String format;
 
     @PostMapping("/hit")
-    @Operation(summary = "add")
     @ResponseStatus(HttpStatus.CREATED)
     public void add(@Valid @RequestBody StatsDtoRequest dto) {
         log.debug("POST (add) with dto={},", dto);
@@ -33,7 +31,6 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    @Operation(summary = "get")
     public List<StatsDtoResponse> get(@RequestParam("start") String start,
                                       @RequestParam("end") String end,
                                       @RequestParam(value = "uris", required = false) List<String> uris,
