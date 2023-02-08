@@ -52,7 +52,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void remove(Long catId) {
         checkCategoryEmpty(catId);
-        checkId(categoryRepository, catId, Category.class);
         log.debug("Removed {} by id #{}:", ENTITY_SIMPLE_NAME, catId);
         categoryRepository.deleteById(catId);
     }

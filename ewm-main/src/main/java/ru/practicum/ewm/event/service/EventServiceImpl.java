@@ -256,28 +256,16 @@ public class EventServiceImpl implements EventService {
     private BooleanBuilder makeBooleanBuilder(AdminSearchFilter filter) {
         java.util.function.Predicate<Object> isNullOrEmpty = obj ->
                 Objects.isNull(obj) || (obj instanceof Collection && ((Collection<?>) obj).isEmpty());
-
         QEvent qEvent = QEvent.event;
-        Predicate userIds = !isNullOrEmpty.test(filter.getUserIds()) ? qEvent.initiator.id.in(filter.getUserIds()) : null;
-        Predicate states = !isNullOrEmpty.test(filter.getStates()) ? qEvent.state.in(filter.getStates()) : null;
-        Predicate categoryIds = !isNullOrEmpty.test(filter.getCategoryIds()) ? qEvent.category.id.in(filter.getCategoryIds()) : null;
-        Predicate rangeStart = !isNullOrEmpty.test(filter.getRangeStart()) ? qEvent.eventDate.after(filter.getRangeStart()) : null;
-        Predicate rangeEnd = !isNullOrEmpty.test(filter.getRangeEnd()) ? qEvent.eventDate.before(filter.getRangeEnd()) : null;
-
-        Predicate text = !isNullOrEmpty.test(filter.getText())
-                ? (qEvent.annotation.likeIgnoreCase(filter.getText()).or(qEvent.description.likeIgnoreCase(filter.getText()))) : null;
-        Predicate paid = !isNullOrEmpty.test(filter.getPaid()) ? qEvent.paid.eq(filter.getPaid()) : null;
-        Predicate onlyAvailable = !isNullOrEmpty.test(filter.getOnlyAvailable())
-                ? qEvent.participantLimit.eq(0).or(qEvent.confirmedRequests.lt(qEvent.participantLimit)) : null;
-
         return new BooleanBuilder()
-                .and(userIds)
-                .and(states)
-                .and(categoryIds)
-                .and(rangeStart)
-                .and(rangeEnd)
-                .and(text)
-                .and(paid)
-                .and(onlyAvailable);
+                .and(!isNullOrEmpty.test(filter.getUserIds()) ? qEvent.initiator.id.in(filter.getUserIds()) : null)
+                .and(!isNullOrEmpty.test(filter.getStates()) ? qEvent.state.in(filter.getStates()) : null)
+                .and(!isNullOrEmpty.test(filter.getCategoryIds()) ? qEvent.category.id.in(filter.getCategoryIds()) : null)
+                .and(!isNullOrEmpty.test(filter.getRangeStart()) ? qEvent.eventDate.after(filter.getRangeStart()) : null)
+                .and(!isNullOrEmpty.test(filter.getPaid()) ? qEvent.paid.eq(filter.getPaid()) : null)
+                .and(!isNullOrEmpty.test(filter.getText())
+                        ? (qEvent.annotation.likeIgnoreCase(filter.getText()).or(qEvent.description.likeIgnoreCase(filter.getText()))) : null)
+                .and(!isNullOrEmpty.test(filter.getOnlyAvailable())
+                        ? qEvent.participantLimit.eq(0).or(qEvent.confirmedRequests.lt(qEvent.participantLimit)) : null);
     }
 }
