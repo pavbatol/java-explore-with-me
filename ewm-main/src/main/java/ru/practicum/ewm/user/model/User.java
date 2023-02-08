@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -28,4 +29,7 @@ public class User {
 
     @Column(name = "email", unique = true, nullable = false)
     String email;
+
+    @Column(name = "observable", nullable = false)
+    Boolean observable = true;
 }

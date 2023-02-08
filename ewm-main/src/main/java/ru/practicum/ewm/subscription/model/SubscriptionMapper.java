@@ -1,0 +1,40 @@
+package ru.practicum.ewm.subscription.model;
+
+import org.mapstruct.*;
+import ru.practicum.ewm.app.BaseMapper;
+import ru.practicum.ewm.user.model.User;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Mapper(componentModel = "spring")
+public interface SubscriptionMapper extends BaseMapper<Subscription, SubscriptionDtoRequest> {
+
+
+    @Override
+    @Mapping(target = "favorites", source = "favorites", qualifiedByName = "idsToUsers")
+    Subscription toEntity(SubscriptionDtoRequest dto);
+
+    @Override
+    @Mapping(target = "favorites", source = "favorites", qualifiedByName = "usersToIds")
+    SubscriptionDtoRequest toDto(Subscription entity);
+
+    @Override
+    @Mapping(target = "favorites", source = "favorites", qualifiedByName = "idsToUsers")
+    @Mapping(target = "id", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Subscription updateEntity(SubscriptionDtoRequest dto, @MappingTarget Subscription targetEntity);
+
+    @Mapping(target = "favorites", source = "favorites")
+    SubscriptionDtoResponse toDtoResponse(Subscription entity);
+
+    @Named("usersToIds")
+    default Set<Long> getIds(Set<User> users) {
+        return users.stream().map(User::getId).collect(Collectors.toSet());
+    }
+
+    @Named("idsToUsers")
+    default Set<User> getUsers(Set<Long> getIds) {
+        return getIds.stream().map(id -> new User().setId(id)).collect(Collectors.toSet());
+    }
+}
