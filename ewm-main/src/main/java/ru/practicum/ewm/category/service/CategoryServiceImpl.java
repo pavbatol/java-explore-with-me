@@ -7,19 +7,18 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.app.exception.ConflictException;
 import ru.practicum.ewm.app.utill.CustomPageRequest;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.model.CategoryDto;
 import ru.practicum.ewm.category.model.CategoryMapper;
 import ru.practicum.ewm.category.storage.CategoryRepository;
-import ru.practicum.ewm.app.exception.ConflictException;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.storage.EventRepository;
 
 import java.util.List;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.exact;
-import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
 import static ru.practicum.ewm.app.validation.ValidatorManager.getNonNullObject;
 
 @Slf4j
