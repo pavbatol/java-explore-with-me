@@ -1,14 +1,14 @@
 package ru.practicum.ewm.subscription.model;
 
 import lombok.Value;
-import ru.practicum.ewm.user.model.User;
+import ru.practicum.ewm.user.model.UserDtoShort;
 
 import java.util.List;
 
 @Value
 public class SubscriptionDtoResponse {
 
-    String title;
+    Long id;
 
-    List<User> favorites;
+    List<UserDtoShort> favorites;
 }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoRequest;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoResponse;
@@ -15,6 +16,7 @@ import ru.practicum.ewm.subscription.service.SubscriptionService;
 import javax.validation.Valid;
 
 @Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Private Subscription")
@@ -33,6 +35,17 @@ public class PrivateSubscriptionController {
         SubscriptionDtoResponse body = subscriptionService.add(userId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
+
+//    @PostMapping
+//    @Operation(summary = "add")
+//    public ResponseEntity<SubscriptionDto> add(
+//            @PathVariable("userId") @Positive Long userId,
+//            @RequestParam("favorite_id") @Positive Long favorite_id) {
+//        log.debug("POST add() with userId: {}, favorite_id {}", userId, favorite_id);
+//        SubscriptionDto body = subscriptionService.add(userId, favorite_id);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+//    }
+
 
     @DeleteMapping
     @Operation(summary = "remove")

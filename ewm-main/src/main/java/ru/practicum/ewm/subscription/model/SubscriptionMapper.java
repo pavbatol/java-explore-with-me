@@ -3,13 +3,13 @@ package ru.practicum.ewm.subscription.model;
 import org.mapstruct.*;
 import ru.practicum.ewm.app.BaseMapper;
 import ru.practicum.ewm.user.model.User;
+import ru.practicum.ewm.user.model.UserMapper;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = UserMapper.class)
 public interface SubscriptionMapper extends BaseMapper<Subscription, SubscriptionDtoRequest> {
-
 
     @Override
     @Mapping(target = "favorites", source = "favorites", qualifiedByName = "idsToUsers")

@@ -4,10 +4,9 @@ import ru.practicum.ewm.subscription.model.SubscriptionDtoRequest;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoResponse;
 import ru.practicum.ewm.subscription.model.SubscriptionFilter;
 
-import java.util.List;
-
 public interface SubscriptionService {
     SubscriptionDtoResponse add(Long userId, SubscriptionDtoRequest dto);
+//    SubscriptionDto add(Long userId, Long favorite_id);
 
     SubscriptionDtoResponse remove(Long userId, SubscriptionDtoRequest dto);
 

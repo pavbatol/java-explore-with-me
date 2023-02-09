@@ -10,11 +10,6 @@ import java.util.Set;
 @Value
 public class SubscriptionDtoRequest {
 
-    Long id;
-
-    @NotNull
-    String title;
-
     User owner;
 
     @NotNull
