@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoRequest;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoResponse;
+import ru.practicum.ewm.subscription.model.SubscriptionDtoUpdate;
 import ru.practicum.ewm.subscription.model.SubscriptionFilter;
 import ru.practicum.ewm.subscription.service.SubscriptionService;
 
@@ -46,6 +47,16 @@ public class PrivateSubscriptionController {
 //        return ResponseEntity.status(HttpStatus.CREATED).body(body);
 //    }
 
+    @PatchMapping("/{sbrId}")
+    @Operation(summary = "update")
+    public ResponseEntity<SubscriptionDtoResponse> update(
+            @PathVariable("userId") Long userId,
+            @PathVariable("sbrId") Long sbrId,
+            @Valid @RequestBody SubscriptionDtoUpdate dto) {
+        log.debug("POST update() with userId: {}, sbr_id: {},dto {}", userId, sbrId, dto);
+        SubscriptionDtoResponse body = subscriptionService.update(userId, sbrId, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+    }
 
     @DeleteMapping
     @Operation(summary = "remove")

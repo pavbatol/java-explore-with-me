@@ -25,6 +25,11 @@ public interface SubscriptionMapper extends BaseMapper<Subscription, Subscriptio
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Subscription updateEntity(SubscriptionDtoRequest dto, @MappingTarget Subscription targetEntity);
 
+    @Mapping(target = "favorites", source = "favorites", qualifiedByName = "idsToUsers")
+    @Mapping(target = "id", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Subscription updateEntity(SubscriptionDtoUpdate dto, @MappingTarget Subscription targetEntity);
+
     @Mapping(target = "favorites", source = "favorites")
     SubscriptionDtoResponse toDtoResponse(Subscription entity);
 
