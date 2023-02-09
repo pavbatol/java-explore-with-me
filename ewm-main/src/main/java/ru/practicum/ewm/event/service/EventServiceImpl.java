@@ -191,7 +191,7 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toDto(entity);
     }
 
-    private void setViews(List<Event> events) {
+    public void setViews(List<Event> events) {
         setViews(events, LocalDateTime.of(0, 1, 1, 0, 0, 0), LocalDateTime.now());
     }
 

@@ -1,28 +1,49 @@
 package ru.practicum.ewm.subscription.service;
 
+import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.app.exception.ConflictException;
+import ru.practicum.ewm.app.exception.NotFoundException;
+import ru.practicum.ewm.app.utill.CustomPageRequest;
+import ru.practicum.ewm.event.model.Event;
+import ru.practicum.ewm.event.model.EventDtoShort;
+import ru.practicum.ewm.event.model.EventMapper;
+import ru.practicum.ewm.event.model.enums.EventSort;
+import ru.practicum.ewm.event.service.EventService;
+import ru.practicum.ewm.event.service.EventServiceImpl;
+import ru.practicum.ewm.event.storage.EventRepository;
 import ru.practicum.ewm.subscription.model.*;
 import ru.practicum.ewm.subscription.storage.SubscriptionRepository;
 import ru.practicum.ewm.user.model.User;
+import ru.practicum.ewm.user.model.UserDtoShort;
 import ru.practicum.ewm.user.storage.UserRepository;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
-import static ru.practicum.ewm.app.validation.ValidatorManager.getNonNullObject;
+import static ru.practicum.ewm.app.validation.ValidatorManager.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
 
+    private static final String ENTITY_SIMPLE_NAME = Subscription.class.getSimpleName();
+    public static final String EVENT_DATE = "eventDate";
+    public static final String VIEWS = "views";
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
+    private final EventRepository eventRepository;
+    private final EventService eventService;
     private final SubscriptionMapper subscriptionMapper;
+    private final EventMapper eventMapper;
 
     @Override
     public SubscriptionDtoResponse add(Long userId, SubscriptionDtoRequest dto) {
@@ -54,6 +75,38 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return null;
     }
 
+    @Override
+    public SubscriptionDtoResponse find(Long userId) {
+        Subscription subscription = subscriptionRepository.findByOwnerId(userId)
+                .orElseThrow(() ->
+                        new NotFoundException(String.format(S_WITH_ID_S_WAS_NOT_FOUND, ENTITY_SIMPLE_NAME, userId)));
+        return subscriptionMapper.toDtoResponse(subscription);
+    }
+
+    @Override
+    public List<EventDtoShort> findAllEvents(Long userId, SubscriptionFilter filter, EventSort eventSort, Integer from, Integer size) {
+        Sort sort = eventSort == EventSort.EVENT_DATE
+                ? Sort.by(EVENT_DATE).ascending()
+                : Sort.by(VIEWS).ascending();
+        CustomPageRequest pageable = CustomPageRequest.by(from, size, sort);
+
+        SubscriptionDtoResponse dto = find(userId);
+        List<Long> favoriteIds = dto.getFavorites().stream()
+                .map(UserDtoShort::getId).collect(Collectors.toList());
+
+        Optional<BooleanBuilder> oBuilder = filter.makeBooleanBuilder(favoriteIds, filter);
+        if (oBuilder.isEmpty()) {
+            return List.of();
+        }
+
+        BooleanBuilder booleanBuilder = oBuilder.get();
+        Page<Event> page = eventRepository.findAll(booleanBuilder, pageable);
+        log.debug("Found {}-count: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
+                page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
+        List<Event> entities = page.getContent();
+        ((EventServiceImpl) eventService).setViews(entities);
+        return eventMapper.toShortDtos(page.getContent());
+    }
 
     private void checkOwner(Long userId, Subscription sbr) {
         if (!Objects.equals(sbr.getOwner().getId(), userId)) {
@@ -61,11 +114,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    private void checkFavoritesEmpty(SubscriptionDtoRequest dto) {
-        if (Objects.isNull(dto.getFavorites()) || dto.getFavorites().isEmpty()) {
-            throw new ConflictException(("Favourite must not be empty"));
-        }
-    }
+//    private void checkFavoritesEmpty(SubscriptionDtoRequest dto) {
+//        if (Objects.isNull(dto.getFavorites()) || dto.getFavorites().isEmpty()) {
+//            throw new ConflictException(("Favourite must not be empty"));
+//        }
+//    }
 
     private void checkFavoriteObservable(Set<Long> favorites) {
         if (userRepository.existsByIdInAndObservable(favorites, false)) {
@@ -79,24 +132,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-/*
-    public SubscriptionDto add(Long userId, Long favorite_id) {
-        checkId(userRepository, userId);
-        checkId(userRepository, favorite_id);
-        Subscription sbr = subscriptionRepository.findBySubscriberIdAndFavoriteId(userId, favorite_id);
-        return null;
-
- */
-
-
-    @Override
-    public SubscriptionDtoResponse findAllFavorites(Long userId, Integer from, Integer size) {
-        return null;
-    }
-
-    @Override
-    public SubscriptionDtoResponse findAllEvents(Long userId, SubscriptionFilter filter, Integer from, Integer size) {
-        return null;
-    }
-
+//    @Override
+//    public SubscriptionDtoResponse findAllFavorites(Long userId, Integer from, Integer size) {
+//        return null;
+//    }
 }

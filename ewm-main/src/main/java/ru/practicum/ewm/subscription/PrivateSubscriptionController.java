@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.event.model.EventDtoShort;
+import ru.practicum.ewm.event.model.enums.EventSort;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoRequest;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoResponse;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoUpdate;
@@ -15,6 +17,7 @@ import ru.practicum.ewm.subscription.model.SubscriptionFilter;
 import ru.practicum.ewm.subscription.service.SubscriptionService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @Validated
@@ -37,16 +40,6 @@ public class PrivateSubscriptionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
-//    @PostMapping
-//    @Operation(summary = "add")
-//    public ResponseEntity<SubscriptionDto> add(
-//            @PathVariable("userId") @Positive Long userId,
-//            @RequestParam("favorite_id") @Positive Long favorite_id) {
-//        log.debug("POST add() with userId: {}, favorite_id {}", userId, favorite_id);
-//        SubscriptionDto body = subscriptionService.add(userId, favorite_id);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(body);
-//    }
-
     @PatchMapping("/{sbrId}")
     @Operation(summary = "update")
     public ResponseEntity<SubscriptionDtoResponse> update(
@@ -55,7 +48,7 @@ public class PrivateSubscriptionController {
             @Valid @RequestBody SubscriptionDtoUpdate dto) {
         log.debug("POST update() with userId: {}, sbr_id: {},dto {}", userId, sbrId, dto);
         SubscriptionDtoResponse body = subscriptionService.update(userId, sbrId, dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+        return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
     @DeleteMapping("/{sbrId}")
@@ -65,30 +58,42 @@ public class PrivateSubscriptionController {
             @PathVariable("sbrId") Long sbrId) {
         log.debug("DELETE remove() with userId: {}, sbrId {}", userId, sbrId);
         SubscriptionDtoResponse body = subscriptionService.remove(userId, sbrId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(body);
     }
 
-    @GetMapping("/favorites")
-    @Operation(summary = "findAllFavorites")
-    public ResponseEntity<SubscriptionDtoResponse> findAllFavorites(
-            @PathVariable("userId") Long userId,
-            @RequestParam(value = "from", defaultValue = "0") Integer from,
-            @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        log.debug("GET findAllFavorites() with userId: {}, from: {}, size {}", userId, from, size);
-        SubscriptionDtoResponse body = subscriptionService.findAllFavorites(userId, from, size);
+    @GetMapping
+    @Operation(summary = "find")
+    public ResponseEntity<SubscriptionDtoResponse> find(
+            @PathVariable("userId") Long userId) {
+        log.debug("GET find() with userId: {}", userId);
+        SubscriptionDtoResponse body = subscriptionService.find(userId);
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
+
+//    @GetMapping("/favorites")
+//    @Operation(summary = "findAllFavorites")
+//    public ResponseEntity<SubscriptionDtoResponse> findAllFavorites(
+//            @PathVariable("userId") Long userId,
+//            @RequestParam(value = "from", defaultValue = "0") Integer from,
+//            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+//        log.debug("GET findAllFavorites() with userId: {}, from: {}, size {}", userId, from, size);
+//        SubscriptionDtoResponse body = subscriptionService.findAllFavorites(userId, from, size);
+//        return ResponseEntity.status(HttpStatus.OK).body(body);
+//    }
+
 
     @GetMapping("/events")
     @Operation(summary = "findAllEvents")
-    public ResponseEntity<SubscriptionDtoResponse> findAllEvents(
-            @RequestBody SubscriptionFilter filter,
+    public ResponseEntity<List<EventDtoShort>> findAllEvents(
+            SubscriptionFilter filter,
             @PathVariable("userId") Long userId,
+            @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "from", defaultValue = "0") Integer from,
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        log.debug("GET findAllEvents() with userId: {}, filter: {}, from: {}, size {}", userId, filter, from, size);
-        SubscriptionDtoResponse body = subscriptionService.findAllEvents(userId, filter, from, size);
+        log.debug("GET findAllEvents() with userId: {}, filter: {}, sort: {},  from: {}, size {}",
+                userId, filter, sort, from, size);
+        EventSort eventSort = sort != null ? EventSort.by(sort) : EventSort.EVENT_DATE;
+        List<EventDtoShort> body = subscriptionService.findAllEvents(userId, filter, eventSort, from, size);
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
-
 }
