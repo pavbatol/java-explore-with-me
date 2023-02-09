@@ -70,30 +70,18 @@ public class PrivateSubscriptionController {
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
-//    @GetMapping("/favorites")
-//    @Operation(summary = "findAllFavorites")
-//    public ResponseEntity<SubscriptionDtoResponse> findAllFavorites(
-//            @PathVariable("userId") Long userId,
-//            @RequestParam(value = "from", defaultValue = "0") Integer from,
-//            @RequestParam(value = "size", defaultValue = "10") Integer size) {
-//        log.debug("GET findAllFavorites() with userId: {}, from: {}, size {}", userId, from, size);
-//        SubscriptionDtoResponse body = subscriptionService.findAllFavorites(userId, from, size);
-//        return ResponseEntity.status(HttpStatus.OK).body(body);
-//    }
-
-
     @GetMapping("/events")
-    @Operation(summary = "findAllEvents")
-    public ResponseEntity<List<EventDtoShort>> findAllEvents(
+    @Operation(summary = "findFavoriteEvents")
+    public ResponseEntity<List<EventDtoShort>> findFavoriteEvents(
             SubscriptionFilter filter,
             @PathVariable("userId") Long userId,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "from", defaultValue = "0") Integer from,
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        log.debug("GET findAllEvents() with userId: {}, filter: {}, sort: {},  from: {}, size {}",
+        log.debug("GET findFavoriteEvents() with userId: {}, filter: {}, sort: {},  from: {}, size {}",
                 userId, filter, sort, from, size);
         EventSort eventSort = sort != null ? EventSort.by(sort) : EventSort.EVENT_DATE;
-        List<EventDtoShort> body = subscriptionService.findAllEvents(userId, filter, eventSort, from, size);
+        List<EventDtoShort> body = subscriptionService.findFavoriteEvents(userId, filter, eventSort, from, size);
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 }

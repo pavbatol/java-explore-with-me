@@ -18,7 +18,5 @@ public interface SubscriptionService {
 
     SubscriptionDtoResponse find(Long userId);
 
-//    SubscriptionDtoResponse findAllFavorites(Long userId, Integer from, Integer size);
-
-    List<EventDtoShort> findAllEvents(Long userId, SubscriptionFilter filter, EventSort eventSort, Integer from, Integer size);
+    List<EventDtoShort> findFavoriteEvents(Long userId, SubscriptionFilter filter, EventSort eventSort, Integer from, Integer size);
 }

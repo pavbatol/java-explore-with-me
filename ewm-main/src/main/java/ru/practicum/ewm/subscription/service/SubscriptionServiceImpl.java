@@ -84,16 +84,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<EventDtoShort> findAllEvents(Long userId, SubscriptionFilter filter, EventSort eventSort, Integer from, Integer size) {
+    public List<EventDtoShort> findFavoriteEvents(Long userId, SubscriptionFilter filter, EventSort eventSort, Integer from, Integer size) {
         Sort sort = eventSort == EventSort.EVENT_DATE
                 ? Sort.by(EVENT_DATE).ascending()
                 : Sort.by(VIEWS).ascending();
         CustomPageRequest pageable = CustomPageRequest.by(from, size, sort);
 
-        SubscriptionDtoResponse dto = find(userId);
-        List<Long> favoriteIds = dto.getFavorites().stream()
-                .map(UserDtoShort::getId).collect(Collectors.toList());
-
+        List<Long> favoriteIds = findFavoriteIds(userId);
         Optional<BooleanBuilder> oBuilder = filter.makeBooleanBuilder(favoriteIds, filter);
         if (oBuilder.isEmpty()) {
             return List.of();
@@ -114,12 +111,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-//    private void checkFavoritesEmpty(SubscriptionDtoRequest dto) {
-//        if (Objects.isNull(dto.getFavorites()) || dto.getFavorites().isEmpty()) {
-//            throw new ConflictException(("Favourite must not be empty"));
-//        }
-//    }
-
     private void checkFavoriteObservable(Set<Long> favorites) {
         if (userRepository.existsByIdInAndObservable(favorites, false)) {
             throw new ConflictException(("Favourite must be 'observable'"));
@@ -132,8 +123,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-//    @Override
-//    public SubscriptionDtoResponse findAllFavorites(Long userId, Integer from, Integer size) {
-//        return null;
-//    }
+    private List<Long> findFavoriteIds(Long userId) {
+        SubscriptionDtoResponse dto = find(userId);
+        return dto.getFavorites().stream()
+                .map(UserDtoShort::getId).collect(Collectors.toList());
+    }
 }
