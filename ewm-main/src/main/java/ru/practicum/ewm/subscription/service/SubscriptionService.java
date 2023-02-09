@@ -11,7 +11,7 @@ public interface SubscriptionService {
 
     SubscriptionDtoResponse update(Long userId, Long subscriptionId, SubscriptionDtoUpdate dto);
 
-    SubscriptionDtoResponse remove(Long userId, SubscriptionDtoRequest dto);
+    SubscriptionDtoResponse remove(Long userId, Long sbrId);
 
     SubscriptionDtoResponse findAllFavorites(Long userId, Integer from, Integer size);
 

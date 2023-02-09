@@ -31,8 +31,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         checkFavoriteObservable(dto.getFavorites());
         Subscription subscription = subscriptionMapper.toEntity(dto);
         subscription.setOwner(new User().setId(userId));
-        Subscription entity = subscriptionRepository.save(subscription);
-        return subscriptionMapper.toDtoResponse(entity);
+        subscriptionRepository.save(subscription);
+        return subscriptionMapper.toDtoResponse(subscription);
     }
 
     @Override
@@ -47,7 +47,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public SubscriptionDtoResponse remove(Long userId, SubscriptionDtoRequest dto) {
+    public SubscriptionDtoResponse remove(Long userId, Long sbrId) {
+        Subscription subscription = getNonNullObject(subscriptionRepository, sbrId);
+        checkOwner(userId, subscription);
+        subscriptionRepository.deleteById(sbrId);
         return null;
     }
 

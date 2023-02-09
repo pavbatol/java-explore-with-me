@@ -58,16 +58,15 @@ public class PrivateSubscriptionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{sbrId}")
     @Operation(summary = "remove")
     public ResponseEntity<SubscriptionDtoResponse> remove(
-            @PathVariable Long userId,
-            @Valid @RequestBody SubscriptionDtoRequest dto) {
-        log.debug("DELETE remove() with userId: {}, dto {}", userId, dto);
-        SubscriptionDtoResponse body = subscriptionService.remove(userId, dto);
+            @PathVariable("userId") Long userId,
+            @PathVariable("sbrId") Long sbrId) {
+        log.debug("DELETE remove() with userId: {}, sbrId {}", userId, sbrId);
+        SubscriptionDtoResponse body = subscriptionService.remove(userId, sbrId);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
-
 
     @GetMapping("/favorites")
     @Operation(summary = "findAllFavorites")
