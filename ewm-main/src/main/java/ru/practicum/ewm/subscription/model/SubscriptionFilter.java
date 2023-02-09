@@ -27,6 +27,7 @@ public class SubscriptionFilter {
                 : Optional.of(
                 new BooleanBuilder()
                         .and(qEvent.initiator.id.in(favoriteIds))
+                        .and(qEvent.initiator.observable.isTrue())
                         .and(!isNullOrEmpty.test(filter.getCategoryIds()) ? qEvent.category.id.in(filter.getCategoryIds()) : null)
                         .and(!isNullOrEmpty.test(filter.getRangeStart()) ? qEvent.eventDate.after(filter.getRangeStart()) : null)
                         .and(!isNullOrEmpty.test(filter.getPaid()) ? qEvent.paid.eq(filter.getPaid()) : null)
