@@ -14,7 +14,7 @@ public interface SubscriptionService {
 
     SubscriptionDtoResponse update(Long userId, Long subscriptionId, SubscriptionDtoUpdate dto);
 
-    SubscriptionDtoResponse remove(Long userId, Long sbrId);
+    void remove(Long userId, Long sbrId);
 
     SubscriptionDtoResponse find(Long userId);
 

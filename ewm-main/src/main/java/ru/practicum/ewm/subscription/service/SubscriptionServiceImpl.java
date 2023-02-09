@@ -53,6 +53,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = subscriptionMapper.toEntity(dto);
         subscription.setOwner(new User().setId(userId));
         subscriptionRepository.save(subscription);
+        log.debug("Added {} : {}", ENTITY_SIMPLE_NAME, subscription);
         return subscriptionMapper.toDtoResponse(subscription);
     }
 
@@ -64,15 +65,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         checkFavoriteObservable(dto.getFavorites());
         subscription = subscriptionMapper.updateEntity(dto, subscription);
         subscriptionRepository.save(subscription);
+        log.debug("Updated {} : {}", ENTITY_SIMPLE_NAME, subscription);
         return subscriptionMapper.toDtoResponse(subscription);
     }
 
     @Override
-    public SubscriptionDtoResponse remove(Long userId, Long sbrId) {
+    public void remove(Long userId, Long sbrId) {
         Subscription subscription = getNonNullObject(subscriptionRepository, sbrId);
         checkOwner(userId, subscription);
         subscriptionRepository.deleteById(sbrId);
-        return null;
+        log.debug("Removed {} by id #{}:", ENTITY_SIMPLE_NAME, sbrId);
     }
 
     @Override
@@ -80,6 +82,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = subscriptionRepository.findByOwnerId(userId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format(S_WITH_ID_S_WAS_NOT_FOUND, ENTITY_SIMPLE_NAME, userId)));
+        log.debug("Found {}: {}", ENTITY_SIMPLE_NAME, subscription);
         return subscriptionMapper.toDtoResponse(subscription);
     }
 

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
+import static ru.practicum.ewm.app.validation.ValidatorManager.getNonNullObject;
 
 @Slf4j
 @Service
@@ -50,5 +51,13 @@ public class UserServiceImpl implements UserService {
         checkId(userRepository, userId, User.class);
         log.debug("Removed {} by id #{}:", ENTITY_SIMPLE_NAME, userId);
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public UserDto privateUpdate(Long userId, Boolean observable) {
+        User user = getNonNullObject(userRepository, userId);
+        user.setObservable(observable);
+        User updated = userRepository.save(user);
+        return userMapper.toDto(updated);
     }
 }

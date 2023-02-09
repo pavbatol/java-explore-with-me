@@ -53,12 +53,12 @@ public class PrivateSubscriptionController {
 
     @DeleteMapping("/{sbrId}")
     @Operation(summary = "remove")
-    public ResponseEntity<SubscriptionDtoResponse> remove(
+    public ResponseEntity<Object> remove(
             @PathVariable("userId") Long userId,
             @PathVariable("sbrId") Long sbrId) {
         log.debug("DELETE remove() with userId: {}, sbrId {}", userId, sbrId);
-        SubscriptionDtoResponse body = subscriptionService.remove(userId, sbrId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(body);
+        subscriptionService.remove(userId, sbrId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping
