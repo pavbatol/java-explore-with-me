@@ -17,6 +17,8 @@ import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.event.service.EventServiceImpl;
 import ru.practicum.ewm.event.storage.EventRepository;
 import ru.practicum.ewm.subscription.model.*;
+import ru.practicum.ewm.subscription.model.filter.SubscriptionFilter;
+import ru.practicum.ewm.subscription.model.filter.SubscriptionFilterHelper;
 import ru.practicum.ewm.subscription.storage.SubscriptionRepository;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.model.UserDtoShort;
@@ -94,7 +96,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         CustomPageRequest pageable = CustomPageRequest.by(from, size, sort);
 
         List<Long> favoriteIds = findFavoriteIds(userId);
-        Optional<BooleanBuilder> oBuilder = filter.makeBooleanBuilder(favoriteIds, filter);
+        Optional<BooleanBuilder> oBuilder = SubscriptionFilterHelper.makeBooleanBuilder(favoriteIds, filter);
         if (oBuilder.isEmpty()) {
             return List.of();
         }

@@ -13,7 +13,7 @@ import ru.practicum.ewm.event.model.enums.EventSort;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoRequest;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoResponse;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoUpdate;
-import ru.practicum.ewm.subscription.model.SubscriptionFilter;
+import ru.practicum.ewm.subscription.model.filter.SubscriptionFilter;
 import ru.practicum.ewm.subscription.service.SubscriptionService;
 
 import javax.validation.Valid;
@@ -40,11 +40,11 @@ public class PrivateSubscriptionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
-    @PatchMapping("/{sbrId}")
+    @PatchMapping("/{subscriptionId}")
     @Operation(summary = "update")
     public ResponseEntity<SubscriptionDtoResponse> update(
             @PathVariable("userId") Long userId,
-            @PathVariable("sbrId") Long sbrId,
+            @PathVariable("subscriptionId") Long sbrId,
             @Valid @RequestBody SubscriptionDtoUpdate dto) {
         log.debug("POST update() with userId: {}, sbr_id: {},dto {}", userId, sbrId, dto);
         SubscriptionDtoResponse body = subscriptionService.update(userId, sbrId, dto);

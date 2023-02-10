@@ -5,7 +5,7 @@ import ru.practicum.ewm.event.model.enums.EventSort;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoRequest;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoResponse;
 import ru.practicum.ewm.subscription.model.SubscriptionDtoUpdate;
-import ru.practicum.ewm.subscription.model.SubscriptionFilter;
+import ru.practicum.ewm.subscription.model.filter.SubscriptionFilter;
 
 import java.util.List;
 
