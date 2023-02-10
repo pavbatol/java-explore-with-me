@@ -81,7 +81,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public SubscriptionDtoResponse find(Long userId) {
         Subscription subscription = subscriptionRepository.findByOwnerId(userId)
                 .orElseThrow(() ->
-                        new NotFoundException(String.format(S_WITH_ID_S_WAS_NOT_FOUND, ENTITY_SIMPLE_NAME, userId)));
+                        new NotFoundException(String.format("%s with ownerId=%s was not found", ENTITY_SIMPLE_NAME, userId)));
         log.debug("Found {}: {}", ENTITY_SIMPLE_NAME, subscription);
         return subscriptionMapper.toDtoResponse(subscription);
     }
