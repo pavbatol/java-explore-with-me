@@ -77,6 +77,5 @@ public class Event {
     @Column(name = "title", length = 120, nullable = false)
     String title;
 
-    @Transient
     Long views;
 }

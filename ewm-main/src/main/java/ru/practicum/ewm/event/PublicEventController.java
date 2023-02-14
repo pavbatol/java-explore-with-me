@@ -12,6 +12,7 @@ import ru.practicum.ewm.event.model.AdminSearchFilter;
 import ru.practicum.ewm.event.model.EventDtoFull;
 import ru.practicum.ewm.event.model.EventDtoShort;
 import ru.practicum.ewm.event.model.enums.EventSort;
+import ru.practicum.ewm.event.model.enums.EventState;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.stats.client.StatsClient;
 
@@ -55,7 +56,7 @@ public class PublicEventController {
 
         AdminSearchFilter filter = new AdminSearchFilter(
                 null,
-                null,
+                List.of(EventState.PUBLISHED),
                 categoryIds,
                 rangeStart != null ? toLocalDateTime(rangeStart) : LocalDateTime.now(),
                 toLocalDateTime(rangeEnd),
@@ -70,7 +71,7 @@ public class PublicEventController {
 
     @GetMapping("/{id}")
     @Operation(summary = "publicFindById")
-    public ResponseEntity<Object> publicFindById(
+    public ResponseEntity<EventDtoFull> publicFindById(
             HttpServletRequest servletRequest,
             @PathVariable("id") Long eventId) {
         log.debug("GET publicFindById() with eventId: {}", eventId);

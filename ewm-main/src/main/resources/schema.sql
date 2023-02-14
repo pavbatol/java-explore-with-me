@@ -34,6 +34,7 @@ create table if not exists events
     request_moderation boolean                     default true  not null,
     state              varchar(255)                              not null,
     title              varchar(120)                              not null,
+    views              BIGINT                      default 0     not null,
     constraint pk_events primary key (event_id),
     constraint fk_events_on_cat foreign key (cat_id) references categories (cat_id),
     constraint fk_events_on_initiator foreign key (initiator_id) references users (user_id)

@@ -6,7 +6,7 @@ public enum AdminActionState {
 
     public static AdminActionState by(String stateName) {
         try {
-            return AdminActionState.valueOf(stateName);
+            return AdminActionState.valueOf(stateName.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Unknown state: " + stateName, e);
         }

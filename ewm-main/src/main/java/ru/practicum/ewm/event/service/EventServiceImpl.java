@@ -47,6 +47,8 @@ public class EventServiceImpl implements EventService {
 
     public static final String ID = "id";
     private static final String ENTITY_SIMPLE_NAME = Event.class.getSimpleName();
+    public static final String EVENT_DATE = "eventDate";
+    public static final String VIEWS = "views";
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
@@ -146,18 +148,17 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDtoShort> publicFindAllByFilter(AdminSearchFilter filter, EventSort eventSort, Integer from, Integer size) {
         Sort sort = eventSort == EventSort.EVENT_DATE
-                ? Sort.by("eventDate").ascending()
-                : Sort.by("views").ascending();
+                ? Sort.by(EVENT_DATE).ascending()
+                : Sort.by(VIEWS).descending();
         CustomPageRequest pageable = CustomPageRequest.by(from, size, sort);
         BooleanBuilder booleanBuilder = makeBooleanBuilder(filter);
         Page<Event> page = eventRepository.findAll(booleanBuilder, pageable);
         log.debug("Found {}-count: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
                 page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
-        List<Event> entities = page.getContent();
-        setViews(entities);
         return eventMapper.toShortDtos(page.getContent());
     }
 
+    @Transactional
     @Override
     public EventDtoFull publicFindById(Long eventId) {
         Event entity = getNonNullObject(eventRepository, eventId);
@@ -166,6 +167,7 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException(String.format("%s with id=%s was not found", ENTITY_SIMPLE_NAME, eventId));
         }
         setViews(List.of(entity));
+        eventRepository.save(entity);
         return eventMapper.toDto(entity);
     }
 
@@ -210,7 +212,7 @@ public class EventServiceImpl implements EventService {
             if (body != null) {
                 TypeReference<List<StatsDtoResponse>> typeRef = new TypeReference<>() {
                 };
-                dtos = objectMapper.readValue(body.toString(), typeRef);
+                dtos = objectMapper.readValue(objectMapper.writeValueAsString(body), typeRef);
             }
         } catch (RestClientException | JsonProcessingException e) {
             log.error(e.getMessage());

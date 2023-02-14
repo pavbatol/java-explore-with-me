@@ -6,7 +6,7 @@ public enum EventSort {
 
     public static EventSort by(String stateName) {
         try {
-            return EventSort.valueOf(stateName);
+            return EventSort.valueOf(stateName.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Unknown state: " + stateName, e);
         }

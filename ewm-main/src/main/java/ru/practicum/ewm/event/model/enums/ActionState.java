@@ -6,7 +6,7 @@ public enum ActionState {
 
     public static ActionState by(String stateName) {
         try {
-            return ActionState.valueOf(stateName);
+            return ActionState.valueOf(stateName.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Unknown state: " + stateName, e);
         }
