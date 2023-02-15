@@ -158,7 +158,6 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toShortDtos(page.getContent());
     }
 
-    @Transactional
     @Override
     public EventDtoFull publicFindById(Long eventId) {
         Event entity = getNonNullObject(eventRepository, eventId);
@@ -168,6 +167,7 @@ public class EventServiceImpl implements EventService {
         }
         setViews(List.of(entity));
         eventRepository.save(entity);
+        log.debug("Set views={}: for {} with id={}", entity.getViews(), ENTITY_SIMPLE_NAME, entity.getId());
         return eventMapper.toDto(entity);
     }
 
@@ -180,7 +180,6 @@ public class EventServiceImpl implements EventService {
         log.debug("Found {}-count: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
                 page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
         List<Event> entities = page.getContent();
-        setViews(entities);
         return eventMapper.toShortDtos(entities);
     }
 
@@ -189,7 +188,6 @@ public class EventServiceImpl implements EventService {
         checkId(userRepository, initiatorId);
         Event entity = getNonNullObject(eventRepository, eventId);
         log.debug("Found {}: {}", ENTITY_SIMPLE_NAME, entity);
-        setViews(List.of(entity));
         return eventMapper.toDto(entity);
     }
 
@@ -225,14 +223,15 @@ public class EventServiceImpl implements EventService {
     }
 
     private void setViewsFromSources(Event event, List<StatsDtoResponse> sources) {
+        String eventUri = "/events/" + event.getId();
         (Objects.isNull(sources) ? new ArrayList<StatsDtoResponse>(0) : sources)
                 .stream()
                 .filter(Objects::nonNull)
-                .filter(dto -> ("/events/" + event.getId()).equals(dto.getUri()))
+                .filter(dto -> eventUri.equals(dto.getUri()))
                 .findFirst()
                 .ifPresentOrElse(
                         dto -> event.setViews(dto.getHits()),
-                        () -> event.setViews(0L));
+                        () -> log.debug("In the statistics response there is no information about {}", eventUri));
     }
 
     private void checkNotPublished(Event entity) {

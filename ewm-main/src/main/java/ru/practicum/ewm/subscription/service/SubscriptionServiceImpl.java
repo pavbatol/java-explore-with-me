@@ -14,7 +14,6 @@ import ru.practicum.ewm.event.model.EventDtoShort;
 import ru.practicum.ewm.event.model.EventMapper;
 import ru.practicum.ewm.event.model.enums.EventSort;
 import ru.practicum.ewm.event.service.EventService;
-import ru.practicum.ewm.event.service.EventServiceImpl;
 import ru.practicum.ewm.event.storage.EventRepository;
 import ru.practicum.ewm.subscription.model.*;
 import ru.practicum.ewm.subscription.model.filter.SubscriptionFilter;
@@ -30,7 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.practicum.ewm.app.validation.ValidatorManager.*;
+import static ru.practicum.ewm.app.validation.ValidatorManager.checkId;
+import static ru.practicum.ewm.app.validation.ValidatorManager.getNonNullObject;
 
 @Slf4j
 @Service
@@ -105,8 +105,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Page<Event> page = eventRepository.findAll(booleanBuilder, pageable);
         log.debug("Found {}-count: {}, totalPages: {}, from: {}, size: {}, sort: {}", ENTITY_SIMPLE_NAME,
                 page.getTotalElements(), page.getTotalPages(), pageable.getFrom(), page.getSize(), page.getSort());
-        List<Event> entities = page.getContent();
-        ((EventServiceImpl) eventService).setViews(entities);
         return eventMapper.toShortDtos(page.getContent());
     }
 

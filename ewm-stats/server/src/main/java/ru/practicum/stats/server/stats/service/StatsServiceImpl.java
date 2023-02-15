@@ -2,6 +2,7 @@ package ru.practicum.stats.server.stats.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats.server.stats.model.Stats;
 import ru.practicum.stats.dto.StatsDtoRequest;
 import ru.practicum.stats.dto.StatsDtoResponse;
@@ -9,7 +10,6 @@ import ru.practicum.stats.server.stats.model.StatsMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
